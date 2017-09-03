@@ -3,6 +3,7 @@ let coordinatesWithTime = [];
 let t = 0;
 let recursion;
 let chart;
+let flag = true
 
 let table = document.getElementById('template-table')
 // table.addEventListener('mouseenter', setTemplate);
@@ -11,16 +12,16 @@ table.addEventListener('mouseleave', clearCoordinates);
 
 
 function setTemplate(event){
-    console.log(event)
     let x = event.clientX;
     let y = event.clientY;
     coordinates.push([x,y,t])
-    if(!recursion){
+    if(flag){
         setTime(null)
     }
 }
 
-function setTime(event){
+function setTime(event){  
+    flag = false
     let x = coordinates[coordinates.length-1][0]
     let y = coordinates[coordinates.length-1][1]
     coordinatesWithTime.push([x,y,t])
@@ -41,6 +42,7 @@ function clearCoordinates(event){
     clearInterval(recursion)
     console.log(coordinatesWithTime)
     chart = generateChart()
+    flag = true
     coordinates = []
     coordinatesWithTime = []
 }
@@ -65,6 +67,14 @@ function generateChart(){
                 x,
             ],
             type: 'scatter'
+        },
+        axis: {
+            x:{
+                label:'Time'
+            },
+            y:{
+                label:'X position'
+            }
         }
     });
 }
