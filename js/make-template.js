@@ -41,8 +41,8 @@ function clearCoordinates(event){
     clearInterval(recursion)
     console.log(coordinatesWithTime)
     chart = generateChart()
-    // coordinates.length = []
-    // coordinatesWithTime.length = []
+    coordinates = []
+    coordinatesWithTime = []
 }
 
 function generateChart(){
