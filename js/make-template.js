@@ -14,33 +14,31 @@ table.addEventListener('mouseleave', clearCoordinates);
 function setTemplate(event){
     let x = event.clientX;
     let y = event.clientY;
-    coordinates.push([x,y,t])
-    if(flag){
-        setTime(null)
-    }
+    let t = moment().valueOf()
+    coordinatesWithTime.push([x,y,t])
 }
 
-function setTime(event){  
-    flag = false
-    let x = coordinates[coordinates.length-1][0]
-    let y = coordinates[coordinates.length-1][1]
-    coordinatesWithTime.push([x,y,t])
-    recursion = setInterval( recur => {
-        t += 10;
-        x = coordinates[coordinates.length-1][0]
-        y = coordinates[coordinates.length-1][1]
-        coordinatesWithTime.push([x,y,t])
-    },10)
-}
+// function setTime(event){  
+//     flag = false
+//     let x = coordinates[coordinates.length-1][0]
+//     let y = coordinates[coordinates.length-1][1]
+//     coordinatesWithTime.push([x,y,t])
+//     recursion = setInterval( recur => {
+//         t += 10;
+//         x = coordinates[coordinates.length-1][0]
+//         y = coordinates[coordinates.length-1][1]
+//         coordinatesWithTime.push([x,y,t])
+//     },10)
+// } wrong
 
 function clearCoordinates(event){
     if(chart){
         chart.destroy();
         chart = null
     }
-    t = 0;
-    clearInterval(recursion)
-    console.log(coordinatesWithTime)
+    // t = 0;
+    // clearInterval(recursion)
+    // console.log(coordinatesWithTime)
     chart = generateChart()
     flag = true
     coordinates = []
@@ -64,12 +62,15 @@ function generateChart(){
     let array = []
     // array.push(['v','t'])
     for (let i = 0 ; i < coordinatesWithTime.length -1 ; i++){
-        let vX = coordinatesWithTime[i+1][0] - coordinatesWithTime[i][0]
-        let vY = coordinatesWithTime[i+1][1] - coordinatesWithTime[i][1]
-        let tV = coordinatesWithTime[i+1][2]
+        let dX = coordinatesWithTime[i+1][0] - coordinatesWithTime[i][0]
+        let dY = coordinatesWithTime[i+1][1] - coordinatesWithTime[i][1]
+        let dT = coordinatesWithTime[i+1][2] - coordinatesWithTime[i][2]
+        let vX = dX / dT
+        let vY = dY / dT
+        let ti = coordinatesWithTime[i+1][2]
         let v = Math.sqrt(Math.pow(vX, 2) + Math.pow(vY, 2))
         x.push(v)
-        t.push(tV)
+        t.push(ti)
     }
     array.push(x,t)
     // console.log(array)
