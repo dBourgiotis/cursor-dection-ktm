@@ -12,7 +12,33 @@ export class AppComponent {
     chartArray: any;
 
     addTemplate(event: any) {
-        this.chartArray = this.transformToVelocityProfile(event);
+        const profile = this.overshootingCheck(event);
+        this.chartArray = this.transformToVelocityProfile(profile);
+    }
+
+    overshootingCheck(template: any) {
+      const array = [];
+      for (let i = 0 ; i < template.length - 1 ; i++) {
+          if (i === 0 ) {
+            array.push(template[i]);
+          }else {
+            // calculate distance of i element from the first element
+            const dXi = template[i][0] - template[0][0];
+            const dYi = template[i][1] - template[0][1];
+            const di = Math.sqrt(Math.pow(dXi, 2) + Math.pow(dYi, 2));
+
+            // calculate distance of i-1 element from the first element OR with the last item pushed to the array
+            // const dXi_1 = template[i - 1][0] - template[0][0];
+            // const dYi_1 = template[i - 1][1] - template[0][1];
+            const dXi_1 = array[array.length - 1][0] - template[0][0];
+            const dYi_1 = array[array.length - 1][1] - template[0][1];
+            const di_1 = Math.sqrt(Math.pow(dXi_1, 2) + Math.pow(dYi_1, 2));
+            if (di > di_1) {
+              array.push(template[i]);
+            }
+          }
+      }
+      return array;
     }
 
     transformToVelocityProfile(template: any) {
