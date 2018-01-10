@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 
+import { AddTemplateService } from './services/add-template.service';
 declare let moment: any;
 declare let c3: any;
 
@@ -11,9 +12,19 @@ declare let c3: any;
 export class AppComponent {
     chartArray: any;
 
+    constructor(
+      private addTemplateService: AddTemplateService,
+    ) {}
+
     addTemplate(event: any) {
         const profile = this.overshootingCheck(event);
-        this.chartArray = this.transformToVelocityProfile(profile);
+        this.addTemplateService.addTemplate(profile)
+            .subscribe(
+              data => {
+                  this.chartArray = this.transformToVelocityProfile(data['template']);
+              },
+              err => console.log(err)
+            );
     }
 
     overshootingCheck(template: any) {
