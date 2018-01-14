@@ -10,7 +10,7 @@ declare let c3: any;
     styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-    chartArray: any = { resampled : null, raw: null, normalized: null};
+    chartArray: any = { resampled : null, raw: null, smoothed: null};
     chartFlag = 0;
 
     constructor(
@@ -24,7 +24,7 @@ export class AppComponent {
               data => {
                   this.chartArray.resampled = data['resampled'] ? this.transformToVelocityProfile(data['resampled']) : null;
                   this.chartArray.raw = data['raw'] ? this.transformToVelocityProfile(data['raw']) : null;
-                  this.chartArray.normalized = data['normalized'] ? this.transformToVelocityProfile(data['normalized']) : null;
+                  this.chartArray.smoothed = data['smoothed'] ? this.transformToVelocityProfile(data['smoothed']) : null;
                   setTimeout( res => {
                       this.chartFlag ++;
                   }, 1000);
