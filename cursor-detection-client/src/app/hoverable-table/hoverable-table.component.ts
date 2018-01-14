@@ -16,7 +16,8 @@ export class HoverableTableComponent {
         const x = event.clientX;
         const y = event.clientY;
         const t = moment().valueOf();
-        this.coordinatesWithTime.push([x, y, t]);
+        // const t = moment().format();
+        this.coordinatesWithTime.push({ x: x, y: y, t: t});
     }
 
     @HostListener('mouseleave', ['$event']) onMouseLeave(event: MouseEvent) {

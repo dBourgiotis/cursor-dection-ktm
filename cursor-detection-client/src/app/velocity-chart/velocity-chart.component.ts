@@ -1,4 +1,5 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { setTimeout } from 'timers';
 
 declare let moment: any;
 declare let c3: any;
@@ -12,10 +13,16 @@ export class VelocityChartComponent implements OnChanges {
     coordinatesWithTime = [];
     chart: any;
     @Input() array: any;
+    @Input() id: any;
+    @Input() chartFlag: any;
 
     ngOnChanges( changes: SimpleChanges) {
-        if (changes.array && this.array && this.array.length) {
+        if ((changes.array && this.array && this.array.length)) {
             this.generateChart(this.formatArrayToChart(this.array));
+        }else if ( changes.chartFlag && this.array && this.array.length) {
+            // setTimeout( res => {
+            //     this.generateChart(this.formatArrayToChart(this.array));
+            // }, 1000);
         }
     }
 
@@ -36,8 +43,9 @@ export class VelocityChartComponent implements OnChanges {
             this.chart.destroy();
             this.chart = null;
         }
+        const formatedId = '#' + this.id;
         this.chart = c3.generate({
-            bindto: '#chart',
+            bindto: formatedId,
             data: {
                 xs: {
                     x: 't',
@@ -46,7 +54,8 @@ export class VelocityChartComponent implements OnChanges {
             },
             axis: {
                 x: {
-                    label: 'Time'
+                    label: 'Time',
+                    type: 'timeseries'
                 },
                 y: {
                     label: 'Total Velocity'
