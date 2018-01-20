@@ -21,6 +21,11 @@ export class HoverableTableComponent {
     }
 
     @HostListener('mouseleave', ['$event']) onMouseLeave(event: MouseEvent) {
+        // this.templateAddition.emit(this.coordinatesWithTime);
+        this.coordinatesWithTime = [];
+    }
+
+    @HostListener('click') onClick() {
         this.templateAddition.emit(this.coordinatesWithTime);
         this.coordinatesWithTime = [];
     }

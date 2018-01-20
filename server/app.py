@@ -5,13 +5,14 @@ from pandas import json
 from flask import jsonify
 import pandas as pd
 from flask_pymongo import PyMongo
-import matplotlib.pyplot as plt
 import numpy as np
 from scipy import ndimage
+import math 
 
 app = Flask(__name__)
 CORS(app)
 mongo = PyMongo(app)
+temporaryTemplates = []
 
 app.config['MONGO_DBNAME'] = 'ktm_db'
 app.config['MONGO_URI'] = 'mongodb://localhost:27017/ktm_db'
@@ -24,33 +25,54 @@ def hello():
 @app.route("/api/v1/template", methods=["POST"])
 # @cross_origin()
 def add_template():
+    # step 0 get template's data
     template = request.json['template']
-    # resample
-    resampled = resample(transformToList(template))
-    resampledList = dataFrameToList(resampled)
-    smoothed = smooth(resampledList)
-    # add to db
-    # output = {'resampled': add_to_database(dataFrameToList(resampled)), 'raw': template, 'smoothed': smoothed} 
-    output = {'resampled': listToObjects(resampledList), 'raw': template, 'smoothed': listToObjects(smoothed)} 
+
+    # step 1 overshooting filter
+    overshooted = overshootingFilter(template)
+
+    # step 2 resample
+    resampled = resample(transformToList(overshooted))
+    resampledList = listToObjects(dataFrameToList(resampled))
+
+    # step 3 create velocity profile
+    velocityProfile = transformToVelocityProfile(resampledList)
+
+    # step 4 add to db (velocity profile, resampled array, total distance)
+    temporaryTemplates.append({'raw': overshooted, 'velocity_profile': velocityProfile})
+
+    # smoothing test has to be on the velocity profile
+    smoothed = smooth(velocityProfile)
+
+    output = {'resampled': velocityProfile, 'smoothed': smoothed, 'temp': temporaryTemplates }
     return jsonify(output)
 
-def smooth(object):
-    # convert both to arrays
-    x_sm = np.array(object['x'])
-    y_sm = np.array(object['y'])
-    sigma = 7
-    x_g1d = ndimage.gaussian_filter1d(x_sm, sigma)
-    y_g1d = ndimage.gaussian_filter1d(y_sm, sigma)
-    xList = []
-    yList = []
-    index = 0
-    # convert np ints to int
-    for x in x_g1d:
-        xList.append(int(x))
-        yList.append(int(y_g1d[index]))
-        index +=1
-    return { 't': object['t'], 'x': xList, 'y': yList }
+# step 1
+def overshootingFilter(template):
+    array = []
+    i = 0
+    for item in template:
+        if i == 0:
+            array.append(item)
+        else:
+            # calculate distance of i element from the first element
+            dXi = template[i]['x'] - template[0]['x']
+            dYi = template[i]['y'] - template[0]['y']
+            di = math.sqrt(math.pow(dXi, 2) + math.pow(dYi, 2))
 
+            #  calculate distance of i-1 element from the first element OR with the last item pushed to the array
+            dXi_1 = array[len(array) - 1]['x'] - template[0]['x']
+            dYi_1 = array[len(array) - 1]['y'] - template[0]['y']
+            di_1 = math.sqrt(math.pow(dXi_1, 2) + math.pow(dYi_1, 2))
+
+            if di > di_1:
+                array.append(template[i])
+
+        i += 1
+    return array
+
+
+# step 2
 def resample(item):
     data = pd.DataFrame(item)
     data = data.set_index(['t'])
@@ -58,6 +80,47 @@ def resample(item):
     resampled = data.resample('50L').fillna(method='bfill')
     return resampled
 
+# step 3
+def transformToVelocityProfile(template):
+    array = []
+    # Maybe all the profiles should start from 0
+    array.append({'velocity': 0, 'time': 0})
+    i = 0
+    for i in range(0, len(template) - 1 ): 
+        dX = template[i + 1]['x'] - template[i]['x']
+        dY = template[i + 1]['y'] - template[i]['y']
+        dT = template[i + 1]['t'] - template[i]['t']
+        vX = dX / dT
+        vY = dY / dT
+        # keep only dt
+        ti = template[i + 1]['t'] - template[0]['t'] 
+        velocity = math.sqrt(math.pow(vX, 2) + math.pow(vY, 2))
+        array.append({'velocity': velocity, 'time': ti})
+    return array
+
+# step 4
+def add_to_database(item):
+    db = mongo.db.ktm_db
+    template_id = db.insert({'template' :item})
+    new_template = db.find_one({'_id': template_id })
+    output = new_template['template']
+    return output
+
+def smooth(object):
+    list = transformVelocityToList(object)
+    # convert both to arrays
+    v_sm = np.array(list['velocity'])
+    sigma = 7
+    v_g1d = ndimage.gaussian_filter1d(v_sm, sigma)
+    smoothed = []
+    index = 0
+    # convert np ints to int
+    for v in v_g1d:
+        smoothed.append({'time': list['time'][index], 'velocity': v})
+        index +=1
+    return smoothed
+
+# utilities
 def transformToList(array):
     tList = []
     xList = []
@@ -67,14 +130,14 @@ def transformToList(array):
         xList.append(item['x'])
         yList.append(item['y'])
     return {'t': tList, 'x': xList, 'y': yList}
-        
 
-def add_to_database(item):
-    db = mongo.db.ktm_db
-    template_id = db.insert({'template' :item})
-    new_template = db.find_one({'_id': template_id })
-    output = new_template['template']
-    return output
+def transformVelocityToList(array):
+    tList = []
+    vList = []
+    for item in array:
+        tList.append(item['time'])
+        vList.append(item['velocity'])
+    return {'time': tList, 'velocity': vList}
 
 def dataFrameToList(data):
     xList = data['x'].values.tolist()
@@ -91,6 +154,16 @@ def listToObjects(data):
     for x in xList:
         list.append({'x': x, 'y': yList[i], 't': tList[i].timestamp() * 1000})
         i = i + 1
+    return list
+
+def velocityListToObjects(data):
+    vList = data['velocity']
+    tList = data['time']
+    list = []
+    i = 0
+    for v in vList:
+        list.append({'velocity': v, 'time': tList[i]})
+        i += 1
     return list
 
 if __name__ == '__main__':

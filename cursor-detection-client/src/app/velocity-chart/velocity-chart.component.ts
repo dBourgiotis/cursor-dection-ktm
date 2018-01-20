@@ -1,8 +1,8 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { setTimeout } from 'timers';
 
 declare let moment: any;
 declare let c3: any;
+declare let d3: any;
 
 @Component({
   moduleId: module.id,
@@ -55,10 +55,13 @@ export class VelocityChartComponent implements OnChanges {
             axis: {
                 x: {
                     label: 'Time',
-                    type: 'timeseries'
+                    // type: 'timeseries'
                 },
                 y: {
-                    label: 'Total Velocity'
+                    label: 'Velocity',
+                    tick: {
+                        format: d3.format('.2f')
+                    }
                 }
             }
         });

@@ -18,13 +18,12 @@ export class AppComponent {
     ) {}
 
     addTemplate(event: any) {
-        const profile = this.overshootingCheck(event);
-        this.addTemplateService.addTemplate(profile)
+        const overshooted = this.overshootingCheck(event);
+        this.addTemplateService.addTemplate(event)
             .subscribe(
               data => {
-                  this.chartArray.resampled = data['resampled'] ? this.transformToVelocityProfile(data['resampled']) : null;
-                  this.chartArray.raw = data['raw'] ? this.transformToVelocityProfile(data['raw']) : null;
-                  this.chartArray.smoothed = data['smoothed'] ? this.transformToVelocityProfile(data['smoothed']) : null;
+                  this.chartArray.resampled = data['resampled'] ? data['resampled'] : null;
+                  this.chartArray.smoothed = data['smoothed'] ? data['smoothed'] : null;
                   setTimeout( res => {
                       this.chartFlag ++;
                   }, 1000);
@@ -45,8 +44,6 @@ export class AppComponent {
             const di = Math.sqrt(Math.pow(dXi, 2) + Math.pow(dYi, 2));
 
             // calculate distance of i-1 element from the first element OR with the last item pushed to the array
-            // const dXi_1 = template[i - 1][0] - template[0][0];
-            // const dYi_1 = template[i - 1][1] - template[0][1];
             const dXi_1 = array[array.length - 1]['x'] - template[0]['x'];
             const dYi_1 = array[array.length - 1]['y'] - template[0]['y'];
             const di_1 = Math.sqrt(Math.pow(dXi_1, 2) + Math.pow(dYi_1, 2));
