@@ -1,4 +1,4 @@
-import { Component, HostListener, Output, EventEmitter } from '@angular/core';
+import { Component, HostListener, Output, EventEmitter, Input } from '@angular/core';
 
 declare let moment: any;
 declare let c3: any;
@@ -10,6 +10,7 @@ declare let c3: any;
 })
 export class HoverableTableComponent {
     coordinatesWithTime = [];
+    @Input() color = 'white';
     @Output() templateAddition: EventEmitter<any> = new EventEmitter();
 
     @HostListener('mousemove', ['$event']) onMouseMove(event: MouseEvent) {
