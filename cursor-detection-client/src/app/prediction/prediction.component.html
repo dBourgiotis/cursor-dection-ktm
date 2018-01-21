@@ -1,0 +1,27 @@
+<div class="container" style="margin-top: 200px;">
+    <div class="row">
+        <div class="col-xs-12">
+            <h4 class="text-muted">Move and click inside the table in order to predict movement</h4>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <app-hoverable-table (templateAddition)='predictTemplate($event)'></app-hoverable-table>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <h4 class="text-muted" *ngIf="chartArray?.predicted">Predicted movement</h4>
+            <app-velocity-chart [array]='chartArray?.predicted' id="predictedData" [chartFlag]='chartFlag'></app-velocity-chart>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <h4 class="text-muted" *ngIf="chartArray?.original">Original movement</h4>
+            <app-velocity-chart [array]='chartArray?.original' id="originalData" [chartFlag]='chartFlag'></app-velocity-chart>
+        </div>
+    </div>
+</div>

@@ -11,11 +11,13 @@ import math
 
 app = Flask(__name__)
 CORS(app)
-mongo = PyMongo(app)
-temporaryTemplates = []
 
-app.config['MONGO_DBNAME'] = 'ktm_db'
-app.config['MONGO_URI'] = 'mongodb://localhost:27017/ktm_db'
+app.config['MONGO_DBNAME'] = 'ktm-db'
+app.config['MONGO_URI'] = 'mongodb://admin:admin@ds111078.mlab.com:11078/ktm-db'
+mongo = PyMongo(app)
+
+scoreArray = []
+totalTemplates = []
 
 @app.route("/")
 def hello():
@@ -23,7 +25,6 @@ def hello():
 
 # endpoint to create new template
 @app.route("/api/v1/template", methods=["POST"])
-# @cross_origin()
 def add_template():
     # step 0 get template's data
     template = request.json['template']
@@ -39,12 +40,16 @@ def add_template():
     velocityProfile = transformToVelocityProfile(resampledList)
 
     # step 4 add to db (velocity profile, resampled array, total distance)
-    temporaryTemplates.append({'raw': overshooted, 'velocity_profile': velocityProfile})
+    added = add_to_database(overshooted, velocityProfile)
+
+    # Get All documents from db
+    totalTemplates = get_from_db()
+    print(len(totalTemplates))
 
     # smoothing test has to be on the velocity profile
     smoothed = smooth(velocityProfile)
 
-    output = {'resampled': velocityProfile, 'smoothed': smoothed, 'temp': temporaryTemplates }
+    output = {'resampled': velocityProfile, 'smoothed': smoothed, 'temp': added }
     return jsonify(output)
 
 # step 1
@@ -99,18 +104,25 @@ def transformToVelocityProfile(template):
     return array
 
 # step 4
-def add_to_database(item):
-    db = mongo.db.ktm_db
-    template_id = db.insert({'template' :item})
-    new_template = db.find_one({'_id': template_id })
-    output = new_template['template']
-    return output
+def add_to_database(template, velocityProfile):
+    db = mongo.db.templates
+    template_id = db.insert({'template' :template, 'velocity_profile': velocityProfile })
+    return 'added'
 
+# get all documents
+def get_from_db():
+    db = mongo.db.templates
+    array = []
+    for temp in db.find():
+        array.append(temp)
+    return array
+
+# smoothing
 def smooth(object):
     list = transformVelocityToList(object)
     # convert both to arrays
     v_sm = np.array(list['velocity'])
-    sigma = 7
+    sigma = 4
     v_g1d = ndimage.gaussian_filter1d(v_sm, sigma)
     smoothed = []
     index = 0
