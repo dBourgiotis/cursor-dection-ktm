@@ -19,12 +19,9 @@ mongo = PyMongo(app)
 
 scoreArray = []
 totalTemplates = []
-xA = 0
-xB = 0
-yA = 0
-yB = 0
-lamda = 0
 totalDistance = 0
+windowHeight = 0
+windowWidth = 0
 
 @app.route("/")
 def hello():
@@ -60,7 +57,7 @@ def add_template():
 def predict_template():
     # step 0 get template's data
     template = request.json['template']
-
+    windowHeight = request.json['windowHeight']
     # step 1 get all templates from db
     totalTemplates = get_from_db()
     # create score Array 
@@ -107,16 +104,10 @@ def predict_template():
     min = findMin(scoreArray)
     bestMatch = findElement(min['key'], totalTemplates)
     totalDistance = bestMatch['total_distance']
-    # should calculate A(x,y) starting point & B(x,y) end point of candidate 
-    xA = resampledList[0]['x']
-    xB = resampledList[len(resampledList) -1]['x']
-    yA = resampledList[0]['y']
-    yB = resampledList[len(resampledList) -1]['y']
-    # should calculate λ first
-    lamda = (yA - yB) / (xA - xB)
-    # fsolve
-    z =  fsolve(equations, [1.0 , 1.0])
-    print(z, equations(z))
+    
+    # find endpoint
+    endpoint = findEndpoint(resampledList, totalDistance)
+    print(endpoint)
 
     output = {'predicted': '', 'original': ''}
     return jsonify(output)
@@ -268,14 +259,26 @@ def velocityListToObjects(data):
         i += 1
     return list
 
-# fsolve
-def equations(p):
-    x = p[0]
-    y = p[1]
-    f = np.zeros(2)
-    f[0] = math.sqrt(math.pow((xA-x), 2) + math.pow((yA-y), 2)) - totalDistance
-    f[1] = yA - y - (xA - x) * lamda
-    return f
+def findEndpoint(list, distance):
+    # should calculate A(x,y) starting point & B(x,y) end point of candidate 
+    xA = list[0]['x']
+    xB = list[len(list) -1]['x']
+    yA = list[0]['y']
+    yB = list[len(list) -1]['y']
+    # should calculate λ first
+    l = (yA - yB) / (xA - xB)
+    # calculate angle
+    radiants = math.atan(l)
+    angle = math.degrees(radiants)
+
+    print(math.cos(angle), math.sin(angle))
+    
+    x = distance * math.cos(angle)
+    y = distance * math.sin(angle)
+    
+    # convert y back to original
+    endpoint = [x, windowHeight - y]
+    return endpoint
 
 if __name__ == '__main__':
     app.run(debug=True)

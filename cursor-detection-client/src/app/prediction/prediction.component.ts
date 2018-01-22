@@ -19,7 +19,7 @@ export class PredictionComponent {
     ) {}
 
     predictTemplate(event: any) {
-        this.predictService.addTemplate(event)
+        this.predictService.appendCandidate(event, window.innerHeight, window.innerWidth)
             .subscribe(
               data => {
                   this.chartArray.predicted = data['predicted'] ? data['predicted'] : null;

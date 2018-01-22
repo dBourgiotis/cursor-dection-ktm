@@ -14,9 +14,16 @@ export class HoverableTableComponent {
     @Output() templateAddition: EventEmitter<any> = new EventEmitter();
 
     @HostListener('mousemove', ['$event']) onMouseMove(event: MouseEvent) {
+        // reverse the (0,0) point
         const x = event.clientX;
-        const y = event.clientY;
+        const y = window.innerHeight - event.clientY;
         const t = moment().valueOf();
+        console.log(x, y);
+        const lastItem = this.coordinatesWithTime.length > 1 ? this.coordinatesWithTime.length - 1 : null;
+        // if ( lastItem && this.coordinatesWithTime[lastItem]['x'] === x && this.coordinatesWithTime[lastItem]['y'] === y ) {
+        //     console.log(x, y, this.coordinatesWithTime[lastItem]);
+        //     this.onClick();
+        // }
         // const t = moment().format();
         this.coordinatesWithTime.push({ x: x, y: y, t: t});
     }
