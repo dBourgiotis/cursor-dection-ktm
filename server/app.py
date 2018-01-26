@@ -17,12 +17,6 @@ app.config['MONGO_DBNAME'] = 'ktm-db'
 app.config['MONGO_URI'] = 'mongodb://admin:admin@ds111078.mlab.com:11078/ktm-db'
 mongo = PyMongo(app)
 
-scoreArray = []
-totalTemplates = []
-totalDistance = 0
-windowHeight = 0
-windowWidth = 0
-
 @app.route("/")
 def hello():
     return "Python Server for the ktm app!"
@@ -106,7 +100,7 @@ def predict_template():
     totalDistance = bestMatch['total_distance']
     
     # find endpoint
-    endpoint = findEndpoint(resampledList, totalDistance)
+    endpoint = findEndpoint(template, resampledList, bestMatch['template'])
     print(endpoint)
 
     output = {'predicted': '', 'original': ''}
@@ -259,25 +253,33 @@ def velocityListToObjects(data):
         i += 1
     return list
 
-def findEndpoint(list, distance):
-    # should calculate A(x,y) starting point & B(x,y) end point of candidate 
-    xA = list[0]['x']
-    xB = list[len(list) -1]['x']
-    yA = list[0]['y']
-    yB = list[len(list) -1]['y']
-    # should calculate λ first
-    l = (yA - yB) / (xA - xB)
-    # calculate angle
-    radiants = math.atan(l)
-    angle = math.degrees(radiants)
+def findEndpoint(original, list, template):
+    # best match
+    distance = 0
+    if len(template) >= len(list):
+        final = len(template) - 1
+        dX = template[final]['x'] - template[len(list) -1]['x']
+        dY = template[final]['y'] - template[len(list) -1]['y']
+        distance = math.sqrt(math.pow(dX, 2) + math.pow(dY, 2))
 
-    print(math.cos(angle), math.sin(angle))
-    
+    # should calculate A(x,y) end -1 point & B(x,y) end point of candidate 
+    xA = list[len(list) -2]['x']
+    xB = list[len(list) -1]['x']
+    yA = list[len(list) -2]['y']
+    yB = list[len(list) -1]['y']
+
+    # should calculate λ first
+    # l = (yA - yB) / (xA - xB)
+    # calculate angle
+    radiants = math.atan2(yA - yB,xA - xB )
+    angle = math.degrees(radiants)
+    print(len(template), len(list))
+    print(distance, angle, xB, yB, math.cos(angle), math.sin(angle))
+
     x = distance * math.cos(angle)
     y = distance * math.sin(angle)
-    
-    # convert y back to original
-    endpoint = [x, windowHeight - y]
+
+    endpoint = [x+xB,y+yB]
     return endpoint
 
 if __name__ == '__main__':
