@@ -23,10 +23,14 @@ def hello():
 
 # endpoint to create new template
 @app.route("/api/v1/template", methods=["POST"])
-def add_template():
+def post_template():
     # step 0 get template's data
     template = request.json['template']
 
+    output = add_template(template)
+    return jsonify(output)
+
+def add_template(template):
     # step 1 overshooting filter
     overshooted = overshootingFilter(template)
 
@@ -44,7 +48,7 @@ def add_template():
     smoothed = smooth(velocityProfile)
 
     output = {'resampled': velocityProfile, 'smoothed': smoothed, 'temp': added }
-    return jsonify(output)
+    return output
 
 # endpoint to predict template
 @app.route("/api/v1/predict", methods=["POST"])
@@ -59,8 +63,11 @@ def predict_template():
     for temp in totalTemplates:
         scoreArray[temp['_id']] = 0
     
+    # Calculate the 90% of the movement
+    fixedLastElem = math.floor(0.9 * (len(template)-1))
+
     # step 2 for every t coming from template
-    for point in range(0, len(template) - 1):
+    for point in range(0, fixedLastElem):
         templateSoFar = []
         # simulate point appending
         for i in range(0, point):
@@ -100,10 +107,12 @@ def predict_template():
     totalDistance = bestMatch['total_distance']
     
     # find endpoint
-    endpoint = findEndpoint(template, resampledList, bestMatch['template'])
-    print(endpoint)
+    endpoint = findEndpoint(template, resampledList, bestMatch['template'], totalDistance)
 
-    output = {'predicted': '', 'original': ''}
+    # append template to db
+    add_template(template)
+
+    output = {'predicted': endpoint, 'original': template[len(template) - 1]}
     return jsonify(output)
 
 def findMin(object):
@@ -253,7 +262,7 @@ def velocityListToObjects(data):
         i += 1
     return list
 
-def findEndpoint(original, list, template):
+def findEndpoint(original, list, template, totalDistance):
     # best match
     distance = 0
     if len(template) >= len(list):
@@ -279,7 +288,7 @@ def findEndpoint(original, list, template):
     x = distance * math.cos(angle)
     y = distance * math.sin(angle)
 
-    endpoint = [x+xB,y+yB]
+    endpoint = [round(x+xB, 0), round(y+yB,0)]
     return endpoint
 
 if __name__ == '__main__':

@@ -9,6 +9,8 @@ declare let c3: any;
     templateUrl: 'hoverable-table.component.html',
 })
 export class HoverableTableComponent {
+    tds = new Array(10);
+    trs = new Array(10);
     coordinatesWithTime = [];
     @Input() color = 'white';
     @Output() templateAddition: EventEmitter<any> = new EventEmitter();
@@ -18,7 +20,7 @@ export class HoverableTableComponent {
         const x = event.clientX;
         const y = window.innerHeight - event.clientY;
         const t = moment().valueOf();
-        console.log(x, y);
+        // console.log(x, y);
         const lastItem = this.coordinatesWithTime.length > 1 ? this.coordinatesWithTime.length - 1 : null;
         // if ( lastItem && this.coordinatesWithTime[lastItem]['x'] === x && this.coordinatesWithTime[lastItem]['y'] === y ) {
         //     console.log(x, y, this.coordinatesWithTime[lastItem]);

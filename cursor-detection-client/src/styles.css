@@ -2,3 +2,7 @@
 #template-table{
 z-index: 1000;
 }
+
+.selected {
+    background-color: crimson !important;
+}

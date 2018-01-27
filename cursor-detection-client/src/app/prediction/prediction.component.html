@@ -10,18 +10,4 @@
             <app-hoverable-table (templateAddition)='predictTemplate($event)' [color]="'lightgray'"></app-hoverable-table>
         </div>
     </div>
-
-    <div class="row">
-        <div class="col-12">
-            <h4 class="text-muted" *ngIf="chartArray?.predicted">Predicted movement</h4>
-            <app-velocity-chart [array]='chartArray?.predicted' id="predictedData" [chartFlag]='chartFlag'></app-velocity-chart>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-12">
-            <h4 class="text-muted" *ngIf="chartArray?.original">Original movement</h4>
-            <app-velocity-chart [array]='chartArray?.original' id="originalData" [chartFlag]='chartFlag'></app-velocity-chart>
-        </div>
-    </div>
 </div>
