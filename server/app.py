@@ -88,8 +88,8 @@ def predict_template():
                 turncatedAndSmootheTemp = smooth(turncatedTemp)
                 # case 1
                 sum = 0
-                for j in range(0, len(smoothed) - 1):
-                    sum = sum + abs(smoothed[j]['velocity'] - turncatedAndSmootheTemp[j]['velocity'])
+                for i in range(0, len(smoothed) - 1):
+                    sum = sum + abs(smoothed[i]['velocity'] - turncatedAndSmootheTemp[i]['velocity'])
                 scoreArray[temp['_id']] = scoreArray[temp['_id']] + sum / len(smoothed)
             else:
                 # temp smoothed
@@ -97,7 +97,7 @@ def predict_template():
                 # case 2
                 sum = 0
                 for j in range(0, len(smoothedTemp) - 1):
-                    sum = sum + abs(smoothed[j]['velocity'] - turncatedAndSmootheTemp[j]['velocity'])
+                    sum = sum + abs(smoothed[j]['velocity'] - smoothedTemp[j]['velocity'])
                 for x in range(j+1, len(smoothed) - 1):
                     sum = sum + smoothed[j]['velocity']
                 scoreArray[temp['_id']] = scoreArray[temp['_id']] + sum / len(smoothed)
@@ -107,12 +107,12 @@ def predict_template():
     totalDistance = bestMatch['total_distance']
     
     # find endpoint
-    endpoint = findEndpoint(template, resampledList, bestMatch['template'], totalDistance)
+    endpoint = findEndpoint(template, resampledList, bestMatch['template'], bestMatch['velocity_profile'])
 
     # append template to db
     add_template(template)
 
-    output = {'predicted': endpoint, 'original': template[len(template) - 1]}
+    output = {'predicted_simple_distance': endpoint['simple_distance'], 'predicted_distance_from_velocity': endpoint['distance_from_velocity'], 'original': template[len(template) - 1]}
     return jsonify(output)
 
 def findMin(object):
@@ -262,14 +262,18 @@ def velocityListToObjects(data):
         i += 1
     return list
 
-def findEndpoint(original, list, template, totalDistance):
+def findEndpoint(original, list, template, velocityProfile):
     # best match
     distance = 0
+    distanceFromVelocity = 0
     if len(template) >= len(list):
         final = len(template) - 1
         dX = template[final]['x'] - template[len(list) -1]['x']
         dY = template[final]['y'] - template[len(list) -1]['y']
         distance = math.sqrt(math.pow(dX, 2) + math.pow(dY, 2))
+        for i in range(len(list), final):
+            print(velocityProfile[i]['velocity'], velocityProfile[i]['time'])
+            distanceFromVelocity = distanceFromVelocity + (velocityProfile[i]['velocity'] * (velocityProfile[i]['time'] - velocityProfile[i-1]['time']))
 
     # should calculate A(x,y) end -1 point & B(x,y) end point of candidate 
     xA = list[len(list) -2]['x']
@@ -288,7 +292,10 @@ def findEndpoint(original, list, template, totalDistance):
     x = distance * math.cos(angle)
     y = distance * math.sin(angle)
 
-    endpoint = [round(x+xB, 0), round(y+yB,0)]
+    x2 = distanceFromVelocity * math.cos(angle)
+    y2 = distanceFromVelocity * math.sin(angle)
+
+    endpoint = { 'simple_distance': [round(x+xB, 0), round(y+yB,0)], 'distance_from_velocity': [round(x2+xB, 0), round(y2+yB,0)] }
     return endpoint
 
 if __name__ == '__main__':

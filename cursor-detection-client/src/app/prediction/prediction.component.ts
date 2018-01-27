@@ -13,21 +13,27 @@ declare let c3: any;
 export class PredictionComponent {
     chartArray: any = { resampled : null, raw: null, smoothed: null};
     chartFlag = 0;
-    selected: any;
+    selected2: any;
+    selected1: any;
 
     constructor(
       private predictService: PredictService,
     ) {}
 
     predictTemplate(event: any) {
-        if (this.selected) { this.selected.className = ''; }
+        if (this.selected1) { this.selected1.className = ''; }
+        if (this.selected2) { this.selected2.className = ''; }
         this.predictService.appendCandidate(event, window.innerHeight, window.innerWidth)
             .subscribe(
                 data => {
                     console.log(data);
-                    const prediction = data['predicted'];
-                    this.selected = document.elementFromPoint(prediction[0], window.innerHeight - prediction[1]);
-                    this.selected.className = 'selected';
+                    const prediction1 = data['predicted_simple_distance'];
+                    this.selected1 = document.elementFromPoint(prediction1[0], window.innerHeight - prediction1[1]);
+                    this.selected1.classList.add('predicted_simple_distance');
+
+                    const prediction2 = data['predicted_distance_from_velocity'];
+                    this.selected2 = document.elementFromPoint(prediction2[0], window.innerHeight - prediction2[1]);
+                    this.selected2.classList.add('predicted_distance_from_velocity');
               },
               err => console.log(err)
             );

@@ -3,6 +3,14 @@
 z-index: 1000;
 }
 
-.selected {
+.predicted_simple_distance {
     background-color: crimson !important;
+}
+
+.predicted_distance_from_velocity {
+    background-color: cyan!important;
+}
+
+.predicted_distance_from_velocity.predicted_simple_distance {
+    background-color: hotpink !important;
 }
