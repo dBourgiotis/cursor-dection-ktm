@@ -54,11 +54,9 @@
         <!-- chip section -->
         <div class="col-3" style="margin-top: 55px;">
             <h5 style="padding-top:16px;">In the news</h5>
-            <mat-card style="margin-top:15px;">
-                <mat-chip-list class="mat-chip-list-stacked" aria-orientation="vertical">
-                    <mat-chip *ngFor="let chip of chips" class="chip">{{chip}}</mat-chip>
-                </mat-chip-list>
-            </mat-card>
+            <div class="button-row" style="margin-top:15px;">
+                <button mat-raised-button *ngFor="let chip of chips" class="chip">{{chip}}</button>
+            </div>
         </div>
     </div>
 </div>

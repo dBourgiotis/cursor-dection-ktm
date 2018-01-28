@@ -54,3 +54,8 @@ h6.left-list.title {
     flex-shrink: 0;
     cursor: pointer;
 }
+
+.chip {
+    margin-bottom: 5px;
+    margin-right: 5px;
+}
