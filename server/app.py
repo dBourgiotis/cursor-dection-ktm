@@ -26,11 +26,11 @@ def hello():
 def post_template():
     # step 0 get template's data
     template = request.json['template']
-
-    output = add_template(template)
+    collectionName = request.json['collectionName']
+    output = add_template(template, collectionName)
     return jsonify(output)
 
-def add_template(template):
+def add_template(template, collectionName):
     # step 1 overshooting filter
     overshooted = overshootingFilter(template)
 
@@ -42,7 +42,7 @@ def add_template(template):
     velocityProfile = transformToVelocityProfile(resampledList)
 
     # step 4 add to db (velocity profile, resampled array, total distance)
-    added = add_to_database(resampledList, velocityProfile)
+    added = add_to_database(resampledList, velocityProfile, collectionName)
 
     # smoothing test has to be on the velocity profile
     smoothed = smooth(velocityProfile)
@@ -55,9 +55,9 @@ def add_template(template):
 def predict_template():
     # step 0 get template's data
     template = request.json['template']
-    windowHeight = request.json['windowHeight']
+    collectionName = request.json['collectionName']
     # step 1 get all templates from db
-    totalTemplates = get_from_db()
+    totalTemplates = get_from_db(collectionName)
     # create score Array 
     scoreArray = {}
     for temp in totalTemplates:
@@ -112,7 +112,7 @@ def predict_template():
     endpoint = findEndpoint(template, resampledList, bestMatch['template'], bestMatch['velocity_profile'])
 
     # append template to db
-    add_template(template)
+    add_template(template, collectionName)
 
     output = {'predicted_simple_distance': endpoint['simple_distance'], 'predicted_distance_from_velocity': endpoint['distance_from_velocity'], 'original': template[len(template) - 1]}
     return jsonify(output)
@@ -186,8 +186,8 @@ def transformToVelocityProfile(template):
     return array
 
 # step 4
-def add_to_database(template, velocityProfile):
-    db = mongo.db.templates
+def add_to_database(template, velocityProfile, collectionName):
+    db = mongo.db[collectionName]
     final = len(template) - 1
     dX = template[final]['x'] - template[0]['x']
     dY = template[final]['y'] - template[0]['y']
@@ -196,8 +196,8 @@ def add_to_database(template, velocityProfile):
     return 'added'
 
 # get all documents
-def get_from_db():
-    db = mongo.db.templates
+def get_from_db(collectionName):
+    db = mongo.db[collectionName]
     array = []
     for temp in db.find():
         array.append(temp)

@@ -20,7 +20,7 @@ export class MakeTemplateComponent {
 
     addTemplate(event: any) {
         const overshooted = this.overshootingCheck(event);
-        this.addTemplateService.addTemplate(event)
+        this.addTemplateService.addTemplate(event, 'templates')
             .subscribe(
               data => {
                   this.chartArray.resampled = data['resampled'] ? data['resampled'] : null;

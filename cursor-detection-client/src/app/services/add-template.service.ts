@@ -10,7 +10,7 @@ export class AddTemplateService {
       private http: HttpClient,
   ) { }
 
-  addTemplate( template: any) {
-    return this.http.post(this.url, {template: template});
+  addTemplate( template: any, collectionName: string) {
+    return this.http.post(this.url, {template: template, collectionName: collectionName});
   }
 }

@@ -23,7 +23,7 @@ export class PredictionComponent {
     predictTemplate(event: any) {
         if (this.selected1) { this.selected1.className = ''; }
         if (this.selected2) { this.selected2.className = ''; }
-        this.predictService.appendCandidate(event, window.innerHeight, window.innerWidth)
+        this.predictService.appendCandidate(event, window.innerHeight, window.innerWidth, 'templates')
             .subscribe(
                 data => {
                     console.log(data);

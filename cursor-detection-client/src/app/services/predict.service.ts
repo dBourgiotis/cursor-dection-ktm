@@ -10,7 +10,9 @@ export class PredictService {
       private http: HttpClient,
   ) { }
 
-  appendCandidate( template: any, windowHeight: any, windowWidth: any) {
-    return this.http.post(this.url, {template: template, windowHeight: windowHeight, windowWidth: windowWidth});
+  appendCandidate( template: any, windowHeight: any, windowWidth: any, collectionName: string) {
+    return this.http.post(this.url,
+      {template: template, windowHeight: windowHeight, windowWidth: windowWidth, collectionName: collectionName}
+    );
   }
 }

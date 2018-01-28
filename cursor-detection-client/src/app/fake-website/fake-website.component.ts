@@ -1,6 +1,7 @@
 import { Component, HostListener, Output, EventEmitter, Input, OnInit } from '@angular/core';
 import { FakeWebsiteService } from './fake-website.service';
 import { PredictService } from '../services/predict.service';
+import { AddTemplateService } from '../services/add-template.service';
 
 declare let moment: any;
 declare let c3: any;
@@ -50,6 +51,7 @@ export class FakeWebsiteComponent implements OnInit {
     constructor (
         private service: FakeWebsiteService,
         private predictService: PredictService,
+        private addTemplateService: AddTemplateService,
     ) {}
 
     ngOnInit() {
@@ -70,14 +72,15 @@ export class FakeWebsiteComponent implements OnInit {
         this.timeout = window.setTimeout(() => {
             this.coordinatesWithTime = [];
             console.log('stopped');
-        }, 500);
+        }, 1000);
 
         this.coordinatesWithTime.push({ x: x, y: y, t: t});
     }
 
     @HostListener('click') onClick() {
         this.templateAddition.emit(this.coordinatesWithTime);
-        console.log(this.coordinatesWithTime);
+        this.addTemplate(this.coordinatesWithTime);
+        // this.predictTemplate(this.coordinatesWithTime);
         this.coordinatesWithTime = [];
     }
 
@@ -92,10 +95,20 @@ export class FakeWebsiteComponent implements OnInit {
         );
     }
 
+    addTemplate(event: any) {
+        this.addTemplateService.addTemplate(event, 'finalTemplates')
+            .subscribe(
+              data => {
+                  console.log(data);
+              },
+              err => console.log(err)
+            );
+    }
+
     predictTemplate(event: any) {
         if (this.selected1) { this.selected1.className = ''; }
         if (this.selected2) { this.selected2.className = ''; }
-        this.predictService.appendCandidate(event, window.innerHeight, window.innerWidth)
+        this.predictService.appendCandidate(event, window.innerHeight, window.innerWidth, 'finalTemplates')
             .subscribe(
                 data => {
                     console.log(data);
