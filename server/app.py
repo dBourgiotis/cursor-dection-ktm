@@ -115,6 +115,7 @@ def predict_template():
     add_template(template, collectionName)
 
     output = {'predicted_simple_distance': endpoint['simple_distance'], 'predicted_distance_from_velocity': endpoint['distance_from_velocity'], 'original': template[len(template) - 1]}
+    add_result_to_db({'predicted_simple_distance': endpoint['simple_distance'], 'predicted_distance_from_velocity': endpoint['distance_from_velocity'], 'original': template[len(template) - 1]}, collectionName)
     return jsonify(output)
 
 def findMin(object):
@@ -202,6 +203,17 @@ def get_from_db(collectionName):
     for temp in db.find():
         array.append(temp)
     return array
+
+# add prediction results to db
+def add_result_to_db(endpoints, collectionName):
+    resultCollection = 'wrong'
+    if collectionName == 'templates':
+        resultCollection = 'results'
+    else:
+        resultCollection = 'finalResults'
+    db = mongo.db[resultCollection]
+    db.insert(endpoints)
+    return 'added'
 
 # smoothing
 def smooth(object):
