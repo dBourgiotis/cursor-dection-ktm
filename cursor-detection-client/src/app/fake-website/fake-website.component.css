@@ -26,7 +26,9 @@
 }
 
 mat-list-item:hover {
-    background-color: gainsboro;}
+    background-color: gainsboro;
+    cursor: pointer;
+}
 
 mat-list-item.left-list {
     font-size: 14px;
@@ -50,4 +52,5 @@ h6.left-list.title {
     width: 130px;
     border-radius: 1%;
     flex-shrink: 0;
+    cursor: pointer;
 }
