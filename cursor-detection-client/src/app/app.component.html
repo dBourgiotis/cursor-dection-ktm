@@ -7,13 +7,10 @@
 
   <div class="collapse navbar-collapse" id="navbarsExampleDefault">
     <ul class="navbar-nav mr-auto">
-      <li class="nav-item active">
-        <a class="nav-link" routerLink='/'>Create Template
-          <span class="sr-only">(current)</span>
+      <li class="nav-item" *ngFor="let item of menu" [ngClass]="{'active': item.active}" (click)='toggleMenu(item?.link)'>
+        <a class="nav-link" [routerLink]='item.link'>
+          {{item.name}}
         </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" routerLink='/prediction'>Prediction</a>
       </li>
     </ul>
   </div>

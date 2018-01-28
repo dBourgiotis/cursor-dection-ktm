@@ -66,6 +66,8 @@ def predict_template():
     # Calculate the 90% of the movement
     fixedLastElem = math.floor(0.9 * (len(template)-1))
 
+    # init resampledList
+    resampledList = []
     # step 2 for every t coming from template
     for point in range(0, fixedLastElem):
         templateSoFar = []
@@ -272,7 +274,6 @@ def findEndpoint(original, list, template, velocityProfile):
         dY = template[final]['y'] - template[len(list) -1]['y']
         distance = math.sqrt(math.pow(dX, 2) + math.pow(dY, 2))
         for i in range(len(list), final):
-            print(velocityProfile[i]['velocity'], velocityProfile[i]['time'])
             distanceFromVelocity = distanceFromVelocity + (velocityProfile[i]['velocity'] * (velocityProfile[i]['time'] - velocityProfile[i-1]['time']))
 
     # should calculate A(x,y) end -1 point & B(x,y) end point of candidate 

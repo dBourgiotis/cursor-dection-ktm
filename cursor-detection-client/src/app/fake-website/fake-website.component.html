@@ -1,0 +1,64 @@
+<div class="container">
+    <!-- submenu fixed -->
+    <div class="row first-row">
+        <div class="col-12 tabs">
+            <mat-tab-group>
+                <mat-tab label="Headlines"></mat-tab>
+                <mat-tab label="Local"></mat-tab>
+                <mat-tab label="For You"></mat-tab>
+            </mat-tab-group>
+        </div>
+    </div>
+    <!-- 3 sections -->
+    <div class="row">
+        <!-- right sections -->
+        <div class="col-3" style="margin-top: 50px;">
+            <mat-list style="position:fixed;">
+                <h6 mat-subheader class="left-list title">SECTIONS</h6>
+                <mat-list-item *ngFor="let section of sections" class="left-list">
+                    <mat-icon mat-list-icon>{{section?.icon}}</mat-icon>
+                    <h5 mat-line>{{section?.name}}</h5>
+                </mat-list-item>
+                <mat-divider></mat-divider>
+                <mat-list-item class="left-list">
+                    <mat-icon mat-list-icon>create</mat-icon>
+                    <h5 mat-line>Manage sections</h5>
+                </mat-list-item>
+            </mat-list>
+        </div>
+
+        <!-- card sections -->
+        <div class="col-6" style="margin-top: 55px;">
+            <h4 style="padding-top:16px;">Top Stories</h4>
+            
+            <mat-card class="example-card" *ngFor="let item of articles">
+                <mat-card-header>
+                    <div mat-card-avatar class="example-header-image" [ngStyle]="{'background-image': 'url(' +item?.urlToImage+ ')'}"></div>
+                    <mat-card-title><h5>{{item?.title}}</h5></mat-card-title>
+                    <mat-card-subtitle>
+                        <a [href]='item?.url' target="_blank">{{item?.author}}</a> • {{item?.publishedAt | date:'MMM d, h:mm a'}}
+                        <mat-icon style="font-size: 14px;">share</mat-icon>
+                    </mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content>
+                    <p style="margin-top: 10px;">{{item?.description}}</p>
+                </mat-card-content>
+                <mat-card-actions>
+                    <button mat-button>LIKE</button>
+                    <button mat-button>SHARE</button>
+                </mat-card-actions>
+            </mat-card>
+
+        </div>
+
+        <!-- chip section -->
+        <div class="col-3" style="margin-top: 55px;">
+            <h5 style="padding-top:16px;">In the news</h5>
+            <mat-card style="margin-top:15px;">
+                <mat-chip-list class="mat-chip-list-stacked" aria-orientation="vertical">
+                    <mat-chip *ngFor="let chip of chips" class="chip">{{chip}}</mat-chip>
+                </mat-chip-list>
+            </mat-card>
+        </div>
+    </div>
+</div>

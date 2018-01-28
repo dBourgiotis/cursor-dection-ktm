@@ -1,0 +1,53 @@
+.container {
+    max-width: 100%;
+    padding-top: 56px;
+    min-height: 100vh;
+    background-color: #f7f7f7;
+}
+
+.first-row {
+    background-color: white;
+    -webkit-box-shadow: 0px 2px 10px -2px rgba(0,0,0,0.36);
+    -moz-box-shadow: 0px 2px 10px -2px rgba(0,0,0,0.36);
+    box-shadow: 0px 2px 10px -2px rgba(0,0,0,0.36);
+    padding: 0;
+    width: 100%;
+    position: fixed;
+    z-index: 1000;
+}
+
+.tabs {
+    padding: 0;
+    max-width: 100%;
+}
+
+::ng-deep .mat-tab-labels{
+    justify-content: center; /* align items in Main Axis */
+}
+
+mat-list-item:hover {
+    background-color: gainsboro;}
+
+mat-list-item.left-list {
+    font-size: 14px;
+}
+
+h6.left-list.title {
+    font-size: 12px;
+    margin-bottom: 0px;
+    padding-bottom: 0px;
+}
+
+/* card */
+.example-card {
+    /* width: 400px; */
+    margin-top: 15px;
+}
+
+.example-header-image {
+    background-size: cover;
+    height: 130px;
+    width: 130px;
+    border-radius: 1%;
+    flex-shrink: 0;
+}
