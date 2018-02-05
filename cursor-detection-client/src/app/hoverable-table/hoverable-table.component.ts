@@ -14,6 +14,7 @@ export class HoverableTableComponent {
     coordinatesWithTime = [];
     @Input() color = 'white';
     @Output() templateAddition: EventEmitter<any> = new EventEmitter();
+    timeout: any;
 
     @HostListener('mousemove', ['$event']) onMouseMove(event: MouseEvent) {
         // reverse the (0,0) point
@@ -22,11 +23,15 @@ export class HoverableTableComponent {
         const t = moment().valueOf();
         // console.log(x, y);
         const lastItem = this.coordinatesWithTime.length > 1 ? this.coordinatesWithTime.length - 1 : null;
-        // if ( lastItem && this.coordinatesWithTime[lastItem]['x'] === x && this.coordinatesWithTime[lastItem]['y'] === y ) {
-        //     console.log(x, y, this.coordinatesWithTime[lastItem]);
-        //     this.onClick();
-        // }
-        // const t = moment().format();
+        // Check if cursor has stop
+        if (this.timeout !== undefined) {
+            window.clearTimeout(this.timeout);
+        }
+        this.timeout = window.setTimeout(() => {
+            this.coordinatesWithTime = [];
+            console.log('stopped');
+        }, 1000);
+
         this.coordinatesWithTime.push({ x: x, y: y, t: t});
     }
 
@@ -36,7 +41,9 @@ export class HoverableTableComponent {
     }
 
     @HostListener('click') onClick() {
-        this.templateAddition.emit(this.coordinatesWithTime);
+        if (this.coordinatesWithTime.length) {
+            this.templateAddition.emit(this.coordinatesWithTime);
+        }
         this.coordinatesWithTime = [];
     }
 }
