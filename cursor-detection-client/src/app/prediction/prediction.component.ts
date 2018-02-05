@@ -15,6 +15,7 @@ export class PredictionComponent {
     chartFlag = 0;
     selected2: any;
     selected1: any;
+    selected3: any;
 
     constructor(
       private predictService: PredictService,
@@ -34,6 +35,10 @@ export class PredictionComponent {
                     const prediction2 = data['predicted_distance_from_velocity'];
                     this.selected2 = document.elementFromPoint(prediction2[0], window.innerHeight - prediction2[1]);
                     this.selected2.classList.add('predicted_distance_from_velocity');
+
+                    const prediction3 = data['total_distance'];
+                    this.selected3 = document.elementFromPoint(prediction2[0], window.innerHeight - prediction2[1]);
+                    this.selected3.classList.add('total_distance');
               },
               err => console.log(err)
             );

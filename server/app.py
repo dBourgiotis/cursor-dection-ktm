@@ -108,12 +108,12 @@ def predict_template():
     totalDistance = bestMatch['total_distance']
     
     # find endpoint
-    endpoint = findEndpoint(template, resampledList, bestMatch['template'], bestMatch['velocity_profile'])
+    endpoint = findEndpoint(template, resampledList, bestMatch['template'], bestMatch['velocity_profile'], totalDistance)
 
     # append template to db
     add_template(template, collectionName)
 
-    output = {'predicted_simple_distance': endpoint['simple_distance'], 'predicted_distance_from_velocity': endpoint['distance_from_velocity'], 'original': template[len(template) - 1]}
+    output = {'predicted_simple_distance': endpoint['simple_distance'], 'predicted_distance_from_velocity': endpoint['distance_from_velocity'], 'original': template[len(template) - 1], 'total_velocity': endpoint['total_distance']}
     add_result_to_db({'predicted_simple_distance': endpoint['simple_distance'], 'predicted_distance_from_velocity': endpoint['distance_from_velocity'], 'original': template[len(template) - 1]}, collectionName)
     return jsonify(output)
 
@@ -275,7 +275,7 @@ def velocityListToObjects(data):
         i += 1
     return list
 
-def findEndpoint(original, list, template, velocityProfile):
+def findEndpoint(original, list, template, velocityProfile, totalDistance):
     # best match
     distance = 0
     distanceFromVelocity = 0
@@ -293,6 +293,9 @@ def findEndpoint(original, list, template, velocityProfile):
     yA = list[len(list) -2]['y']
     yB = list[len(list) -1]['y']
 
+    x0 = list[0]['x']
+    y0 = list[0]['y']
+
     # should calculate λ first
     # l = (yA - yB) / (xA - xB)
     # calculate angle
@@ -307,7 +310,10 @@ def findEndpoint(original, list, template, velocityProfile):
     x2 = distanceFromVelocity * math.cos(angle)
     y2 = distanceFromVelocity * math.sin(angle)
 
-    endpoint = { 'simple_distance': [round(x+xB, 0), round(y+yB,0)], 'distance_from_velocity': [round(x2+xB, 0), round(y2+yB,0)] }
+    x3 = totalDistance * math.cos(angle)
+    y3 = totalDistance * math.sin(angle)
+
+    endpoint = { 'simple_distance': [round(x+xB, 0), round(y+yB,0)], 'distance_from_velocity': [round(x2+xB, 0), round(y2+yB,0)], 'total_distance':[round(x3+x0, 0), round(y3+y0,0)] }
     return endpoint
 
 if __name__ == '__main__':
