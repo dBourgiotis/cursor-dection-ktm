@@ -7,7 +7,6 @@ import pandas as pd
 from flask_pymongo import PyMongo
 import numpy as np
 from scipy import ndimage
-from scipy.optimize import fsolve
 import math 
 
 app = Flask(__name__)
@@ -222,7 +221,7 @@ def smooth(object):
     v_sm = np.array(list['velocity'])
     sigma = 4
     v_g1d = ndimage.gaussian_filter1d(v_sm, sigma)
-    smoothed = []
+    smoothed = [] 
     index = 0
     # convert np ints to int
     for v in v_g1d:

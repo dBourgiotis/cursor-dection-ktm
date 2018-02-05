@@ -96,31 +96,33 @@ export class FakeWebsiteComponent implements OnInit {
     }
 
     addTemplate(event: any) {
-        this.addTemplateService.addTemplate(event, 'finalTemplates')
+        if (event.length) {
+            this.addTemplateService.addTemplate(event, 'finalTemplates')
             .subscribe(
               data => {
                   console.log(data);
               },
               err => console.log(err)
             );
+        }
     }
 
     predictTemplate(event: any) {
-        if (this.selected1) { this.selected1.className = ''; }
-        if (this.selected2) { this.selected2.className = ''; }
-        this.predictService.appendCandidate(event, window.innerHeight, window.innerWidth, 'finalTemplates')
-            .subscribe(
-                data => {
-                    console.log(data);
-                    const prediction1 = data['predicted_simple_distance'];
-                    this.selected1 = document.elementFromPoint(prediction1[0], window.innerHeight - prediction1[1]);
-                    this.selected1.classList.add('predicted_simple_distance');
-
-                    const prediction2 = data['predicted_distance_from_velocity'];
-                    this.selected2 = document.elementFromPoint(prediction2[0], window.innerHeight - prediction2[1]);
-                    this.selected2.classList.add('predicted_distance_from_velocity');
-              },
-              err => console.log(err)
-            );
+        if (event.length) {
+            if (this.selected1) { this.selected1.className = ''; }
+            if (this.selected2) { this.selected2.className = ''; }
+            this.predictService.appendCandidate(event, window.innerHeight, window.innerWidth, 'finalTemplates')
+                .subscribe(
+                    data => {
+                        const prediction1 = data['predicted_simple_distance'];
+                        this.selected1 = document.elementFromPoint(prediction1[0], window.innerHeight - prediction1[1]);
+                        this.selected1.classList.add('predicted_simple_distance');
+                        const prediction2 = data['predicted_distance_from_velocity'];
+                        this.selected2 = document.elementFromPoint(prediction2[0], window.innerHeight - prediction2[1]);
+                        this.selected2.classList.add('predicted_distance_from_velocity');
+                  },
+                  err => console.log(err)
+                );
+        }
     }
 }
