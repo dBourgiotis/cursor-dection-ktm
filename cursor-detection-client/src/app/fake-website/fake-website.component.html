@@ -57,6 +57,15 @@
             <div class="button-row" style="margin-top:15px;">
                 <button mat-raised-button *ngFor="let chip of chips" class="chip">{{chip}}</button>
             </div>
+
+            <section class="example-section" style="margin-top:20px;">
+                <label class="example-margin">Add Template for:</label>
+                <mat-radio-group [(ngModel)]="aim" style="display: block">
+                    <mat-radio-button class="example-margin" value="template" style="display: block">Library</mat-radio-button>
+                    <mat-radio-button class="example-margin" value="prediction" style="display: block">Prediction</mat-radio-button>
+                    <mat-radio-button class="example-margin" value="live_prediction"  style="display: block">Live Prediction</mat-radio-button>
+                </mat-radio-group>
+            </section>
         </div>
     </div>
 </div>

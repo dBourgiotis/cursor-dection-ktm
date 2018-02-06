@@ -1,13 +1,24 @@
 <div class="container" style="margin-top: 200px;">
     <div class="row">
         <div class="col-xs-12">
+            <section class="example-section">
+                <label class="example-margin">Add Template for:</label>
+                <mat-radio-group [(ngModel)]="aim">
+                    <mat-radio-button class="example-margin" value="template">Library</mat-radio-button>
+                    <mat-radio-button class="example-margin" value="prediction">Prediction</mat-radio-button>
+                </mat-radio-group>
+            </section>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12">
             <h4 class="text-muted">Place cursor inside the table to start detection</h4>
         </div>
     </div>
 
     <div class="row">
         <div class="col-12">
-            <app-hoverable-table (templateAddition)='addTemplate($event)'></app-hoverable-table>
+            <app-hoverable-table (templateAddition)='action($event)'></app-hoverable-table>
         </div>
     </div>
 

@@ -13,13 +13,30 @@ declare let c3: any;
 export class MakeTemplateComponent {
     chartArray: any = { resampled : null, raw: null, smoothed: null};
     chartFlag = 0;
-
+    aim = 'template';
     constructor(
       private addTemplateService: AddTemplateService,
     ) {}
 
+    action(event: any) {
+        if (this.aim === 'template') {
+          this.addTemplate(event);
+        } else {
+          this.addPrediction(event);
+        }
+    }
+
+    addPrediction(event: any) {
+      this.addTemplateService.addPrediction(event, 'templates')
+            .subscribe(
+              data => {
+                console.log('added');
+              },
+              err => console.log(err)
+            );
+    }
+
     addTemplate(event: any) {
-        const overshooted = this.overshootingCheck(event);
         this.addTemplateService.addTemplate(event, 'templates')
             .subscribe(
               data => {

@@ -63,6 +63,9 @@ export class VelocityChartComponent implements OnChanges {
                         format: d3.format('.2f')
                     }
                 }
+            },
+            legend: {
+                hide: true
             }
         });
     }

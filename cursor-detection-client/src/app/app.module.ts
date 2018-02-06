@@ -14,6 +14,8 @@ import { FakeWebsiteComponent } from './fake-website/fake-website.component';
 
 import { AddTemplateService } from './services/add-template.service';
 import { PredictService } from './services/predict.service';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+
 
 @NgModule({
     declarations: [
@@ -29,6 +31,7 @@ import { PredictService } from './services/predict.service';
         HttpClientModule,
         AppRoutingModule,
         MatModule,
+        FormsModule,
     ],
     providers: [AddTemplateService, PredictService],
     bootstrap: [AppComponent]

@@ -17,6 +17,7 @@ export class FakeWebsiteComponent implements OnInit {
     timeout: any;
     selected2: any;
     selected1: any;
+    aim = 'template';
 
     sections = [
         {name: 'Top Stories', icon: 'chrome_reader_mode'},
@@ -79,8 +80,7 @@ export class FakeWebsiteComponent implements OnInit {
 
     @HostListener('click') onClick() {
         this.templateAddition.emit(this.coordinatesWithTime);
-        this.addTemplate(this.coordinatesWithTime);
-        // this.predictTemplate(this.coordinatesWithTime);
+        this.action(this.coordinatesWithTime);
         this.coordinatesWithTime = [];
     }
 
@@ -95,9 +95,31 @@ export class FakeWebsiteComponent implements OnInit {
         );
     }
 
+    action(event: any) {
+        if (this.aim === 'template') {
+            this.addTemplate(event);
+        } else if (this.aim === 'live_prediction') {
+            this.predictTemplate(event);
+        } else {
+            this.addPrediction(event);
+        }
+    }
+
     addTemplate(event: any) {
         if (event.length) {
             this.addTemplateService.addTemplate(event, 'finalTemplates')
+            .subscribe(
+              data => {
+                  console.log(data);
+              },
+              err => console.log(err)
+            );
+        }
+    }
+
+    addPrediction(event: any) {
+        if (event.length) {
+            this.addTemplateService.addPrediction(event, 'finalTemplates')
             .subscribe(
               data => {
                   console.log(data);

@@ -117,6 +117,15 @@ def predict_template():
     add_result_to_db({'predicted_simple_distance': endpoint['simple_distance'], 'predicted_distance_from_velocity': endpoint['distance_from_velocity'], 'original': template[len(template) - 1]}, collectionName)
     return jsonify(output)
 
+# endpoint to add Raw predictions
+@app.route("/api/v1/predictions", methods=["POST"])
+def get_prediction():
+    template = request.json['template']
+    collectionName = request.json['collectionName']
+    output = add_prediction_to_db({'raw': template}, collectionName)
+    return jsonify(output)
+
+
 def findMin(object):
     i = 0
     min = {}
@@ -213,6 +222,17 @@ def add_result_to_db(endpoints, collectionName):
     db = mongo.db[resultCollection]
     db.insert(endpoints)
     return 'added'
+
+# add prediction raw to db
+def add_prediction_to_db(endpoints, collectionName):
+    rawPredictionsCollection = 'wrong'
+    if collectionName == 'templates':
+        rawPredictionsCollection = 'rawPredictionsTable'
+    else:
+        rawPredictionsCollection = 'rawPredictionsFakeSite'
+    db = mongo.db[rawPredictionsCollection]
+    db.insert(endpoints)
+    return 'added' 
 
 # smoothing
 def smooth(object):
