@@ -139,7 +139,7 @@ def templateMatching(template, totalTemplates, percent, collectionName):
                 sum = 0
                 for j in range(0, len(smoothedTemp)):
                     sum = sum + abs(smoothed[j]['velocity'] - smoothedTemp[j]['velocity'])
-                for x in range(j+1, len(smoothed)):
+                for x in range(len(smoothedTemp), len(smoothed)):
                     sum = sum + smoothed[j]['velocity']
                 scoreArray[temp['_id']] = scoreArray[temp['_id']] + sum / len(smoothed)
     # print(scoreArray)
