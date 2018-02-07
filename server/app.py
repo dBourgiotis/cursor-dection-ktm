@@ -118,7 +118,6 @@ def templateMatching(template, totalTemplates, percent, collectionName):
         resampledList = listToObjects(dataFrameToList(resampled))
         velocityProfile = transformToVelocityProfile(resampledList)
         smoothed = smooth(velocityProfile)
-        print(len(velocityProfile), len(smoothed))
         # cross all templates
         for temp in totalTemplates:
             if len(temp['velocity_profile']) >= len(smoothed) :
@@ -142,7 +141,6 @@ def templateMatching(template, totalTemplates, percent, collectionName):
                 for x in range(len(smoothedTemp), len(smoothed)):
                     sum = sum + smoothed[j]['velocity']
                 scoreArray[temp['_id']] = scoreArray[temp['_id']] + sum / len(smoothed)
-    # print(scoreArray)
     min = findMin(scoreArray)
     bestMatch = findElement(min['key'], totalTemplates)
     totalDistance = bestMatch['total_distance']
