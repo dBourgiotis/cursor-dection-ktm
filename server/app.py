@@ -107,10 +107,10 @@ def templateMatching(template, totalTemplates, percent, collectionName):
     # init resampledList
     resampledList = []
     # step 2 for every t coming from template
-    for point in range(0, fixedLastElem):
+    for point in range(0, fixedLastElem + 1):
         templateSoFar = []
         # simulate point appending
-        for i in range(0, point):
+        for i in range(0, point + 1):
             templateSoFar.append(template[i])
         # process template so far
         overshooted = overshootingFilter(templateSoFar)
@@ -118,18 +118,18 @@ def templateMatching(template, totalTemplates, percent, collectionName):
         resampledList = listToObjects(dataFrameToList(resampled))
         velocityProfile = transformToVelocityProfile(resampledList)
         smoothed = smooth(velocityProfile)
+        print(len(velocityProfile), len(smoothed))
         # cross all templates
         for temp in totalTemplates:
-            print(len(temp['velocity_profile']), len(smoothed))
             if len(temp['velocity_profile']) >= len(smoothed) :
                 # temp should be turnacated and then smoothed
                 turncatedTemp = []
-                for j in range(0, len(smoothed) - 1):
+                for j in range(0, len(smoothed)):
                     turncatedTemp.append(temp['velocity_profile'][j])
                 turncatedAndSmootheTemp = smooth(turncatedTemp)
                 # case 1
                 sum = 0
-                for i in range(0, len(smoothed) - 1):
+                for i in range(0, len(smoothed)):
                     sum = sum + abs(smoothed[i]['velocity'] - turncatedAndSmootheTemp[i]['velocity'])
                 scoreArray[temp['_id']] = scoreArray[temp['_id']] + sum / len(smoothed)
             else:
@@ -137,9 +137,9 @@ def templateMatching(template, totalTemplates, percent, collectionName):
                 smoothedTemp = smooth(temp['velocity_profile'])
                 # case 2
                 sum = 0
-                for j in range(0, len(smoothedTemp) - 1):
+                for j in range(0, len(smoothedTemp)):
                     sum = sum + abs(smoothed[j]['velocity'] - smoothedTemp[j]['velocity'])
-                for x in range(j+1, len(smoothed) - 1):
+                for x in range(j+1, len(smoothed)):
                     sum = sum + smoothed[j]['velocity']
                 scoreArray[temp['_id']] = scoreArray[temp['_id']] + sum / len(smoothed)
     # print(scoreArray)
@@ -217,6 +217,7 @@ def transformToVelocityProfile(template):
     # Maybe all the profiles should start from 0
     array.append({'velocity': 0, 'time': 0})
     i = 0
+    # len has to be - 1 because we use + 1
     for i in range(0, len(template) - 1 ): 
         dX = template[i + 1]['x'] - template[i]['x']
         dY = template[i + 1]['y'] - template[i]['y']
@@ -335,9 +336,9 @@ def findEndpoint(original, list, template, velocityProfile, totalDistance):
     distance = 0
     distanceFromVelocity = 0
     if len(template) >= len(list):
-        final = len(template) - 1
-        dX = template[final]['x'] - template[len(list) -1]['x']
-        dY = template[final]['y'] - template[len(list) -1]['y']
+        final = len(template)
+        dX = template[final-1]['x'] - template[len(list) -1]['x']
+        dY = template[final-1]['y'] - template[len(list) -1]['y']
         distance = math.sqrt(math.pow(dX, 2) + math.pow(dY, 2))
         for i in range(len(list), final):
             distanceFromVelocity = distanceFromVelocity + (velocityProfile[i]['velocity'] * (velocityProfile[i]['time'] - velocityProfile[i-1]['time']))
