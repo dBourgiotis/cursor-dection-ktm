@@ -9,9 +9,10 @@ import { Router, ActivatedRoute } from '@angular/router';
 export class AppComponent implements OnInit {
 
     menu = [
-        { name: 'Create Template', link: '/', active: true },
+        { name: 'Create Template', link: '/', active: false },
         { name: 'Prediction', link: '/prediction', active: false },
         { name: 'Fake Website', link: '/fake-website', active: false },
+        { name: 'Analysis', link: '/analysis', active: false },
     ];
 
     constructor (

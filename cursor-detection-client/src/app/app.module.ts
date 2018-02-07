@@ -11,6 +11,7 @@ import { VelocityChartComponent } from './velocity-chart/velocity-chart.componen
 import { MakeTemplateComponent } from './make-template/make-template.component';
 import { PredictionComponent } from './prediction/prediction.component';
 import { FakeWebsiteComponent } from './fake-website/fake-website.component';
+import { AnalysisComponent } from './analysis/analysis.component';
 
 import { AddTemplateService } from './services/add-template.service';
 import { PredictService } from './services/predict.service';
@@ -25,6 +26,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
         MakeTemplateComponent,
         PredictionComponent,
         FakeWebsiteComponent,
+        AnalysisComponent
     ],
     imports: [
         BrowserModule,

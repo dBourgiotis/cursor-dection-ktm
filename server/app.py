@@ -57,13 +57,52 @@ def predict_template():
     collectionName = request.json['collectionName']
     # step 1 get all templates from db
     totalTemplates = get_from_db(collectionName)
-    # create score Array 
+    output = templateMatching(template,totalTemplates,0.9, collectionName)
+    return jsonify(output)
+
+# endpoint to add Raw predictions
+@app.route("/api/v1/predictions", methods=["POST"])
+def get_prediction():
+    template = request.json['template']
+    collectionName = request.json['collectionName']
+    output = add_prediction_to_db({'raw': template}, collectionName)
+    return jsonify(output)
+
+# endpoint to add Raw predictions
+@app.route("/api/v1/calculate_results", methods=["GET"])
+def get_Results():
+    params = request.args
+    percent = int(params['percent']) / 100
+    experimentType = params['experimentType']
+    predictions = []
+    templates = []
+    collectionName = ''
+    if experimentType == 'table':
+        # get table templates and predictions
+        templates = get_from_db('templates')
+        predictions = get_from_db('rawPredictionsTable')
+        collectionName = 'templates'
+    else:
+        # get fake news template and predictions
+        collectionName = 'finalTemplates'
+        templates = get_from_db('finalTemplates')
+        predictions = get_from_db('rawPredictionsFakeSite')
+    for prediction in predictions:
+        result = templateMatching(prediction['raw'], templates,percent, collectionName)
+
+    # results = get_from_db('results')
+    # output = {'templates': templates, 'predictions': predictions}
+    # print(output)
+    return 'test'
+
+def templateMatching(template, totalTemplates, percent, collectionName):
+# create score Array 
     scoreArray = {}
     for temp in totalTemplates:
         scoreArray[temp['_id']] = 0
     
     # Calculate the 90% of the movement
-    fixedLastElem = math.floor(0.9 * (len(template)-1))
+    fixedLastElem = math.floor(percent * (len(template)-1))
 
     # init resampledList
     resampledList = []
@@ -81,6 +120,7 @@ def predict_template():
         smoothed = smooth(velocityProfile)
         # cross all templates
         for temp in totalTemplates:
+            print(len(temp['velocity_profile']), len(smoothed))
             if len(temp['velocity_profile']) >= len(smoothed) :
                 # temp should be turnacated and then smoothed
                 turncatedTemp = []
@@ -102,28 +142,23 @@ def predict_template():
                 for x in range(j+1, len(smoothed) - 1):
                     sum = sum + smoothed[j]['velocity']
                 scoreArray[temp['_id']] = scoreArray[temp['_id']] + sum / len(smoothed)
-    
+    # print(scoreArray)
     min = findMin(scoreArray)
     bestMatch = findElement(min['key'], totalTemplates)
     totalDistance = bestMatch['total_distance']
     
     # find endpoint
-    endpoint = findEndpoint(template, resampledList, bestMatch['template'], bestMatch['velocity_profile'], totalDistance)
-
-    # append template to db
-    add_template(template, collectionName)
-
-    output = {'predicted_simple_distance': endpoint['simple_distance'], 'predicted_distance_from_velocity': endpoint['distance_from_velocity'], 'original': template[len(template) - 1], 'total_velocity': endpoint['total_distance']}
-    add_result_to_db({'predicted_simple_distance': endpoint['simple_distance'], 'predicted_distance_from_velocity': endpoint['distance_from_velocity'], 'original': template[len(template) - 1]}, collectionName)
-    return jsonify(output)
-
-# endpoint to add Raw predictions
-@app.route("/api/v1/predictions", methods=["POST"])
-def get_prediction():
-    template = request.json['template']
-    collectionName = request.json['collectionName']
-    output = add_prediction_to_db({'raw': template}, collectionName)
-    return jsonify(output)
+    print('Min is ',min)
+    endpoint = findEndpoint(template, resampledList, bestMatch['template'], bestMatch['velocity_profile'], totalDistance).copy()
+    print('error' in endpoint)
+    if len(template) > 1 and not( 'error' in endpoint) :
+        print(endpoint)
+        output = {'predicted_simple_distance': endpoint['simple_distance'], 'predicted_distance_from_velocity': endpoint['distance_from_velocity'], 'original': template[len(template) - 1], 'total_distance': endpoint['total_distance']}
+        temp = output.copy()
+        add_result_to_db(temp, collectionName)
+        return output
+    else: 
+        return {'error': ''}
 
 
 def findMin(object):
@@ -308,10 +343,21 @@ def findEndpoint(original, list, template, velocityProfile, totalDistance):
             distanceFromVelocity = distanceFromVelocity + (velocityProfile[i]['velocity'] * (velocityProfile[i]['time'] - velocityProfile[i-1]['time']))
 
     # should calculate A(x,y) end -1 point & B(x,y) end point of candidate 
-    xA = list[len(list) -2]['x']
-    xB = list[len(list) -1]['x']
-    yA = list[len(list) -2]['y']
-    yB = list[len(list) -1]['y']
+    if len(list) <=1:
+        endpoint = { 'error': 'length_under_1' }
+        return endpoint
+
+    if len(list) > 1:
+        xA = list[len(list) -2]['x']
+        yA = list[len(list) -2]['y']
+        xB = list[len(list) -1]['x']
+        yB = list[len(list) -1]['y']
+    else :
+        xB = list[len(list) -1]['x']
+        yB = list[len(list) -1]['y']
+        xA = list[0]['x']
+        yA = list[0]['y']  
+
 
     x0 = list[0]['x']
     y0 = list[0]['y']
@@ -321,8 +367,7 @@ def findEndpoint(original, list, template, velocityProfile, totalDistance):
     # calculate angle
     radiants = math.atan2(yA - yB,xA - xB )
     angle = math.degrees(radiants)
-    print(len(template), len(list))
-    print(distance, angle, xB, yB, math.cos(angle), math.sin(angle))
+    print(distance, distanceFromVelocity, len(list), len(template))
 
     x = distance * math.cos(angle)
     y = distance * math.sin(angle)
