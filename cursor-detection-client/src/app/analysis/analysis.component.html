@@ -39,6 +39,24 @@
                 </div>
             </div>
         </div>
+
+        <div class="row">
+            <div class="col-12">
+                <app-dist-chart [chartFlag]='chartFlag' [widget]='simpleDistanceErrorPixelsDistChart'></app-dist-chart>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <app-dist-chart [chartFlag]='chartFlag' [widget]='distanceFromVelocityErrorPixelsDistChart'></app-dist-chart>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-12">
+                <app-dist-chart [chartFlag]='chartFlag' [widget]='totalDistanceErrorPixelsDistChart'></app-dist-chart>
+            </div>
+        </div>
     </ng-container>
     
 </div>

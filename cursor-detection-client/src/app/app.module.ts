@@ -18,6 +18,7 @@ import { PredictService } from './services/predict.service';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { VerifyResultsService } from './services/verify-results.service';
 import { AnalysisResultsService } from './services/analysis-results.service';
+import { DistChartComponent } from './analysis/dist-chart/dist-chart.component';
 
 
 @NgModule({
@@ -28,7 +29,8 @@ import { AnalysisResultsService } from './services/analysis-results.service';
         MakeTemplateComponent,
         PredictionComponent,
         FakeWebsiteComponent,
-        AnalysisComponent
+        AnalysisComponent,
+        DistChartComponent
     ],
     imports: [
         BrowserModule,
