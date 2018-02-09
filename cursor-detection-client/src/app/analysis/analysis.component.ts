@@ -25,11 +25,27 @@ export class AnalysisComponent {
     distanceFromVelocityErrorPixelsDist: any;
     totalDistanceErrorPixelsDist: any;
     simpleDistanceErrorPixelsDistChart: any = {title: 'Simple Distance',
-    color: ['#673ab7'], columns: '', id: 'simpleDistanceErrorPixelsDistChart'} ;
+    color: ['#673ab7'], columns: '', id: 'simpleDistanceErrorPixelsDistChart', avgDistance: ''} ;
     distanceFromVelocityErrorPixelsDistChart: any = {title: 'Distance From Rest Velocity',
-    color: ['#DE0CE8'], columns: '', id: 'distanceFromVelocityErrorPixelsDistChart'} ;
+    color: ['#DE0CE8'], columns: '', id: 'distanceFromVelocityErrorPixelsDistChart', avgDistance: ''} ;
     totalDistanceErrorPixelsDistChart: any = {title: 'Total Distance',
-    color: ['#E8510C'], columns: '', id: 'totalDistanceErrorPixelsDistChart'} ;
+    color: ['#E8510C'], columns: '', id: 'totalDistanceErrorPixelsDistChart', avgDistance: ''} ;
+
+    simpleDistanceErrorPixelsWithDistScatterChart: any = {title: 'Simple Distance with Total Distance',
+    color: ['#673ab7'], columns: '', id: 'simpleDistanceErrorPixelsWithDistScatterChart'} ;
+    distanceFromVelocityErrorPixelsWithDistScatterChart: any = {title: 'Distance From Rest Velocity',
+    color: ['#DE0CE8'], columns: '', id: 'distanceFromVelocityErrorPixelsWithDistScatterChart'} ;
+    totalDistanceErrorPixelsWithDistScatterChart: any = {title: 'Total Distance',
+    color: ['#E8510C'], columns: '', id: 'totalDistanceErrorPixelsWithDistScatterChart'} ;
+
+    simpleDistanceErrorPixelsWithPredictionScatterChart: any = {title: 'Simple Distance with Total Distance',
+    color: ['#673ab7'], columns: '', id: 'simpleDistanceErrorPixelsWithPredictionScatterChart'} ;
+    distanceFromVelocityErrorPixelsWithPredictionScatterChart: any = {title: 'Distance From Rest Velocity',
+    color: ['#DE0CE8'], columns: '', id: 'distanceFromVelocityErrorPixelsWithPredictionScatterChart'} ;
+    totalDistanceErrorPixelsWithPredictionScatterChart: any = {title: 'Total Distance',
+    color: ['#E8510C'], columns: '', id: 'totalDistanceErrorPixelsWithPredictionScatterChart'} ;
+
+    candidatesTotalDistance: any = [];
 
     constructor(
       private predictService: PredictService,
@@ -63,11 +79,34 @@ export class AnalysisComponent {
         this.simpleDistanceErrorPixels = [];
         this.distanceFromVelocityErrorPixels = [];
         this.totalDistanceErrorPixels = [];
+
+        const simpleDistancePredictionResults: any = [];
+        const distanceFromVelocityPredictionResults: any = [];
+        const totalDistancePredictionResults: any = [];
         for ( const item of this.results.results) {
             this.simpleDistanceErrorPixels.push(item.error_distance_of_predicted_simple_distance);
             this.distanceFromVelocityErrorPixels.push(item.error_distance_of_predicted_distance_from_velocity);
             this.totalDistanceErrorPixels.push(item.error_distance_of_predicted_total_distance);
+            this.candidatesTotalDistance.push(item.candidates_total_distance);
+
+            simpleDistancePredictionResults.push(item.predicted_simple_distance_html_result);
+            distanceFromVelocityPredictionResults.push(item.predicted_distance_from_velocity_html_result);
+            totalDistancePredictionResults.push(item.predicted_total_distance_html_result);
         }
+        this.simpleDistanceErrorPixelsWithDistScatterChart.columns = this.transformToScatter(this.candidatesTotalDistance,
+            this.simpleDistanceErrorPixels);
+        this.distanceFromVelocityErrorPixelsWithDistScatterChart.columns = this.transformToScatter(this.candidatesTotalDistance,
+            this.distanceFromVelocityErrorPixels);
+        this.totalDistanceErrorPixelsWithDistScatterChart.columns = this.transformToScatter(this.candidatesTotalDistance,
+            this.candidatesTotalDistance);
+
+        this.simpleDistanceErrorPixelsWithPredictionScatterChart.columns = this.transformToBooleanScatter(simpleDistancePredictionResults,
+            this.simpleDistanceErrorPixels);
+        this.distanceFromVelocityErrorPixelsWithPredictionScatterChart.columns =
+            this.transformToBooleanScatter(distanceFromVelocityPredictionResults, this.distanceFromVelocityErrorPixels);
+        this.totalDistanceErrorPixelsWithPredictionScatterChart.columns = this.transformToBooleanScatter(totalDistancePredictionResults,
+            this.candidatesTotalDistance);
+
         this.simpleDistanceErrorPixelsDist = this.calculateDists(this.simpleDistanceErrorPixels);
         this.distanceFromVelocityErrorPixelsDist = this.calculateDists(this.distanceFromVelocityErrorPixels);
         this.totalDistanceErrorPixelsDist = this.calculateDists(this.totalDistanceErrorPixels);
@@ -75,6 +114,10 @@ export class AnalysisComponent {
         this.simpleDistanceErrorPixelsDistChart.columns = this.formatObjectForChart(this.simpleDistanceErrorPixelsDist);
         this.distanceFromVelocityErrorPixelsDistChart.columns = this.formatObjectForChart(this.distanceFromVelocityErrorPixelsDist);
         this.totalDistanceErrorPixelsDistChart.columns = this.formatObjectForChart(this.totalDistanceErrorPixelsDist);
+
+        this.simpleDistanceErrorPixelsDistChart.avgDistance = this.avgDistance(this.simpleDistanceErrorPixels);
+        this.distanceFromVelocityErrorPixelsDistChart.avgDistance = this.avgDistance(this.distanceFromVelocityErrorPixels);
+        this.totalDistanceErrorPixelsDistChart.avgDistance = this.avgDistance(this.totalDistanceErrorPixels);
 
         this.chartFlag++;
     }
@@ -128,6 +171,33 @@ export class AnalysisComponent {
             res[0].push(key);
         }
         return res;
+    }
+
+    avgDistance(array: any) {
+        let sum = 0;
+        for ( const item of array) {
+            sum = sum + item;
+        }
+        return sum / array.length;
+    }
+
+    transformToScatter(arrayX: any, arrayY: any) {
+        const columns = [['total_distance'], ['error_distance']];
+        for (let i = 0 ; i < arrayX.length; i++) {
+            columns[1].push(arrayY[i]);
+            columns[0].push(arrayX[i]);
+        }
+        return columns;
+    }
+
+    transformToBooleanScatter(arrayBooleanX: any, arrayY: any) {
+        const columns = [['prediction_result'], ['error_distance']];
+        for (let i = 0 ; i < arrayY.length; i++) {
+            columns[1].push(arrayY[i]);
+            const res = arrayBooleanX[i] ? 1 : 0;
+            columns[0].push(res + '');
+        }
+        return columns;
     }
 
 }

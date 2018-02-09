@@ -19,7 +19,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { VerifyResultsService } from './services/verify-results.service';
 import { AnalysisResultsService } from './services/analysis-results.service';
 import { DistChartComponent } from './analysis/dist-chart/dist-chart.component';
-
+import { ScatterChartComponent } from './analysis/scatter-chart/scatter-chart.component';
+import { ScatterBooleanChartComponent } from './analysis/scatter-boolean-chart/scatter-boolean-chart.component';
 
 @NgModule({
     declarations: [
@@ -30,7 +31,9 @@ import { DistChartComponent } from './analysis/dist-chart/dist-chart.component';
         PredictionComponent,
         FakeWebsiteComponent,
         AnalysisComponent,
-        DistChartComponent
+        DistChartComponent,
+        ScatterChartComponent,
+        ScatterBooleanChartComponent,
     ],
     imports: [
         BrowserModule,

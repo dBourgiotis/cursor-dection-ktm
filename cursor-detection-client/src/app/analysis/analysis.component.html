@@ -1,62 +1,110 @@
 <div class="container" style="margin-top: 100px;">
-    <mat-tab-group [(selectedIndex)]="selectedTab">
-        <mat-tab label="Table Experiment"></mat-tab>
-        <mat-tab label="Fake News Experiment"></mat-tab>
-    </mat-tab-group>
+  <mat-tab-group [(selectedIndex)]="selectedTab">
+    <mat-tab label="Table Experiment"></mat-tab>
+    <mat-tab label="Fake News Experiment"></mat-tab>
+  </mat-tab-group>
 
-    <form>
-        <p style="margin-top:60px; margin-bottom:10px;"> Selected percent of candidate movement: </p>
+  <form>
+    <p style="margin-top:60px; margin-bottom:10px;"> Selected percent of candidate movement: </p>
 
-        <mat-form-field>
-            <mat-select [(value)]="selected">
-                <mat-option value="90">90%</mat-option>
-                <mat-option value="80">80%</mat-option>
-                <mat-option value="70">70%</mat-option>
-                <mat-option value="60">60%</mat-option>
-            </mat-select>
-        </mat-form-field>
+    <mat-form-field>
+      <mat-select [(value)]="selected">
+        <mat-option value="90">90%</mat-option>
+        <mat-option value="80">80%</mat-option>
+        <mat-option value="70">70%</mat-option>
+        <mat-option value="60">60%</mat-option>
+      </mat-select>
+    </mat-form-field>
 
-        <div class="button-row">
-            <button mat-raised-button color="primary" (click)='calculateResults()' disabled>Calculate Results</button>
-        </div>
-    </form>
-    <hr>
+    <div class="button-row">
+      <button mat-raised-button color="primary" (click)='calculateResults()' disabled>Calculate Results</button>
+    </div>
+  </form>
+  <hr>
 
+  <div class="row" style="margin-top: 50px;">
+    <div class="col-12">
+      <button mat-raised-button color="primary" (click)='analysisResults()'>Analysis Results</button>
+    </div>
+  </div>
+
+  <ng-container *ngIf="results">
     <div class="row" style="margin-top: 50px;">
-        <div class="col-12">
-            <button mat-raised-button color="primary" (click)='analysisResults()'>Analysis Results</button>
+      <div class="col-12">
+        <h4>Verified Results Percent based on Elements Inner Html</h4>
+        <div class="row">
+          <div class="col-4">
+            <p>Simple Distance: {{results?.percent_simple_distance | percent:'1.0-2'}}</p>
+          </div>
+          <div class="col-4">
+            <p>Distance From Velocity: {{results?.percent_distance_from_velocity | percent:'1.0-2'}}</p>
+          </div>
+          <div class="col-4">
+            <p>Total Distance: {{results?.percent_total_distance | percent:'1.0-2'}}</p>
+          </div>
         </div>
+      </div>
     </div>
 
-    <ng-container *ngIf="results">
-        <div class="row" style="margin-top: 50px;">
-            <div class="col-12">
-                <h4 >Verified Results Percent based on Elements Inner Html</h4>
-                <div class="row">
-                    <div class="col-4"><p>Simple Distance: {{results?.percent_simple_distance | percent:'1.0-2'}}</p></div>
-                    <div class="col-4"><p>Distance From Velocity: {{results?.percent_distance_from_velocity | percent:'1.0-2'}}</p></div>
-                    <div class="col-4"><p>Total Distance: {{results?.percent_total_distance | percent:'1.0-2'}}</p></div>
-                </div>
-            </div>
-        </div>
+    <hr>
 
-        <div class="row">
-            <div class="col-12">
-                <app-dist-chart [chartFlag]='chartFlag' [widget]='simpleDistanceErrorPixelsDistChart'></app-dist-chart>
-            </div>
-        </div>
+    <div class="row">
+      <div class="col-12">
+        <app-dist-chart [chartFlag]='chartFlag' [widget]='simpleDistanceErrorPixelsDistChart'></app-dist-chart>
+      </div>
+    </div>
 
-        <div class="row">
-            <div class="col-12">
-                <app-dist-chart [chartFlag]='chartFlag' [widget]='distanceFromVelocityErrorPixelsDistChart'></app-dist-chart>
-            </div>
-        </div>
-        
-        <div class="row">
-            <div class="col-12">
-                <app-dist-chart [chartFlag]='chartFlag' [widget]='totalDistanceErrorPixelsDistChart'></app-dist-chart>
-            </div>
-        </div>
-    </ng-container>
-    
+    <div class="row">
+      <div class="col-12">
+        <app-dist-chart [chartFlag]='chartFlag' [widget]='distanceFromVelocityErrorPixelsDistChart'></app-dist-chart>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-12">
+        <app-dist-chart [chartFlag]='chartFlag' [widget]='totalDistanceErrorPixelsDistChart'></app-dist-chart>
+      </div>
+    </div>
+
+    <hr>
+
+    <div class="row">
+      <div class="col-12">
+        <app-scatter-boolean-chart [chartFlag]='chartFlag' [widget]='simpleDistanceErrorPixelsWithPredictionScatterChart'></app-scatter-boolean-chart>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-12">
+        <app-scatter-boolean-chart [chartFlag]='chartFlag' [widget]='distanceFromVelocityErrorPixelsWithPredictionScatterChart'></app-scatter-boolean-chart>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-12">
+        <app-scatter-boolean-chart [chartFlag]='chartFlag' [widget]='totalDistanceErrorPixelsWithPredictionScatterChart'></app-scatter-boolean-chart>
+      </div>
+    </div>
+
+    <hr>
+
+    <div class="row">
+      <div class="col-12">
+        <app-scatter-chart [chartFlag]='chartFlag' [widget]='simpleDistanceErrorPixelsWithDistScatterChart'></app-scatter-chart>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-12">
+        <app-scatter-chart [chartFlag]='chartFlag' [widget]='distanceFromVelocityErrorPixelsWithDistScatterChart'></app-scatter-chart>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-12">
+        <app-scatter-chart [chartFlag]='chartFlag' [widget]='totalDistanceErrorPixelsWithDistScatterChart'></app-scatter-chart>
+      </div>
+    </div>
+  </ng-container>
+
 </div>
