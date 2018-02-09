@@ -17,6 +17,7 @@ export class AnalysisComponent {
     chartFlag = 0;
     selected = '90';
     selectedTab = 0;
+    results: any = null;
 
     constructor(
       private predictService: PredictService,
@@ -35,10 +36,11 @@ export class AnalysisComponent {
     }
 
     analysisResults() {
+        this.results = null;
         const verifiedResultsCollectionName = this.selectedTab ? 'verifiedFinalResults' : 'verifiedResults';
         this.analysisResultsService.get(verifiedResultsCollectionName).subscribe(
             data => {
-                console.log(data);
+                this.results = data;
             },
             err => console.log(err)
         );

@@ -27,5 +27,18 @@
             <button mat-raised-button color="primary" (click)='analysisResults()'>Analysis Results</button>
         </div>
     </div>
+
+    <ng-container *ngIf="results">
+        <div class="row" style="margin-top: 50px;">
+            <div class="col-12">
+                <h4 >Verified Results Percent based on Elements Inner Html</h4>
+                <div class="row">
+                    <div class="col-4"><p>Simple Distance: {{results?.percent_simple_distance | percent:'1.0-2'}}</p></div>
+                    <div class="col-4"><p>Distance From Velocity: {{results?.percent_distance_from_velocity | percent:'1.0-2'}}</p></div>
+                    <div class="col-4"><p>Total Distance: {{results?.percent_total_distance | percent:'1.0-2'}}</p></div>
+                </div>
+            </div>
+        </div>
+    </ng-container>
     
 </div>
