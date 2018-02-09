@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 
 import { AddTemplateService } from '../services/add-template.service';
+import { VerifyResultsService } from '../services/verify-results.service';
 declare let moment: any;
 declare let c3: any;
 
@@ -16,7 +17,15 @@ export class MakeTemplateComponent {
     aim = 'template';
     constructor(
       private addTemplateService: AddTemplateService,
+      private verifyResultsService: VerifyResultsService,
     ) {}
+
+    verifyResults() {
+      this.verifyResultsService.get('results').subscribe(
+        data => console.log(data),
+        err => console.log(err)
+      );
+    }
 
     action(event: any) {
         if (this.aim === 'template') {

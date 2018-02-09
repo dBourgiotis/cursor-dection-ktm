@@ -101,8 +101,33 @@ def htmlVerification():
     params = request.args
     resultsCollectionName = params['resultsCollectionName']
     results = get_from_db(resultsCollectionName)
-    print(results)
-    return 'test'
+    output  = transformResultsWithErrorDistance(results)
+    return jsonify(output)
+
+def transformResultsWithErrorDistance(results):
+    transformedResults = []
+    for item in results:
+        # calculate pixel prediction errors
+        errorDistanceOfPredictedSimpleDistance = calculateDistanceBetweenPoints(item['predicted_simple_distance'], item['original'])
+        errorDistanceOfPredictedDistanceFromVelocity = calculateDistanceBetweenPoints(item['predicted_distance_from_velocity'], item['original'])
+        errorDistanceOfPredictedTotalDistance = calculateDistanceBetweenPoints(item['total_distance'], item['original'])
+        transformedResults.append({'predicted_simple_distance':item['predicted_simple_distance'], 
+                                    'predicted_distance_from_velocity':item['predicted_distance_from_velocity'], 
+                                    'total_distance':item['total_distance'],
+                                    'original':item['original'], 
+                                    'candidates_total_distance':item['candidates_total_distance'], 
+                                    'error_distance_of_predicted_simple_distance': errorDistanceOfPredictedSimpleDistance,
+                                    'error_distance_of_predicted_distance_from_velocity': errorDistanceOfPredictedDistanceFromVelocity,
+                                    'error_distance_of_predicted_total_distance': errorDistanceOfPredictedTotalDistance,
+                                    })
+    return transformedResults
+
+def calculateDistanceBetweenPoints(predictionPoint, endpoint):
+    distance = 0
+    dX = endpoint['x'] - predictionPoint[0]
+    dY = endpoint['y'] - predictionPoint[1]
+    distance = math.sqrt(math.pow(dX, 2) + math.pow(dY, 2))
+    return distance
 
 def templateMatching(template, totalTemplates, percent, collectionName):
 # create score Array 
