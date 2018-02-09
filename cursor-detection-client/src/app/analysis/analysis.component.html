@@ -17,8 +17,15 @@
         </mat-form-field>
 
         <div class="button-row">
-            <button mat-raised-button color="primary" (click)='calculateResults()'>Calculate Results</button>
+            <button mat-raised-button color="primary" (click)='calculateResults()' disabled>Calculate Results</button>
         </div>
     </form>
+    <hr>
+
+    <div class="row" style="margin-top: 50px;">
+        <div class="col-12">
+            <button mat-raised-button color="primary" (click)='analysisResults()'>Analysis Results</button>
+        </div>
+    </div>
     
 </div>

@@ -17,6 +17,7 @@ import { AddTemplateService } from './services/add-template.service';
 import { PredictService } from './services/predict.service';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { VerifyResultsService } from './services/verify-results.service';
+import { AnalysisResultsService } from './services/analysis-results.service';
 
 
 @NgModule({
@@ -36,7 +37,7 @@ import { VerifyResultsService } from './services/verify-results.service';
         MatModule,
         FormsModule,
     ],
-    providers: [AddTemplateService, PredictService, VerifyResultsService],
+    providers: [AddTemplateService, PredictService, VerifyResultsService, AnalysisResultsService],
     bootstrap: [AppComponent]
 })
 export class AppModule { }

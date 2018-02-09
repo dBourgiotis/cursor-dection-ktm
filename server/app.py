@@ -114,6 +114,17 @@ def saveHtmlVerification():
     db.insert(results)
     return 'SAVED'
 
+# endpoint to analysis results
+@app.route("/api/v1/analysis_results", methods=["GET"])
+def getAnalysisResults():
+    params = request.args
+    resultsCollectionName = params['verifiedResultsCollectionName']
+    documents = get_from_db(resultsCollectionName)
+    output  = {'results': documents[0]['results'], 'percent_simple_distance': documents[0]['percent_simple_distance'], 
+    'percent_distance_from_velocity':documents[0]['percent_distance_from_velocity'],
+    'percent_total_distance':documents[0]['percent_total_distance']}
+    return jsonify(output)
+
 def transformResultsWithErrorDistance(results):
     transformedResults = []
     for item in results:
