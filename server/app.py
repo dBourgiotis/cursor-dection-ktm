@@ -104,6 +104,16 @@ def htmlVerification():
     output  = transformResultsWithErrorDistance(results)
     return jsonify(output)
 
+# endpoint to save html verification results
+@app.route("/api/v1/html_verification", methods=["POST"])
+def saveHtmlVerification():
+    results = request.json['results']
+    collectionName = request.json['verifiedResultsCollectionName']
+    db = mongo.db[collectionName]
+    # db.drop()
+    db.insert(results)
+    return 'SAVED'
+
 def transformResultsWithErrorDistance(results):
     transformedResults = []
     for item in results:

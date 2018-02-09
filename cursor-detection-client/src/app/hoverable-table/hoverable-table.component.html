@@ -2,7 +2,7 @@
   <table class="table table-bordered" style="height: 500px; width: 900px;" [ngStyle]="{'background-color': color}">
     <tbody>
       <tr *ngFor="let item of trs; let i = index">
-        <td *ngFor="let item of tds; let j = index">{{i}} - {{j}}</td>
+        <td *ngFor="let item of tds; let j = index" [id]='i + "-" +j'>{{i}} - {{j}}</td>
       </tr>
     </tbody>
   </table>

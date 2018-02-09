@@ -15,6 +15,8 @@ export class MakeTemplateComponent {
     chartArray: any = { resampled : null, raw: null, smoothed: null};
     chartFlag = 0;
     aim = 'template';
+    results: any;
+
     constructor(
       private addTemplateService: AddTemplateService,
       private verifyResultsService: VerifyResultsService,
@@ -22,9 +24,65 @@ export class MakeTemplateComponent {
 
     verifyResults() {
       this.verifyResultsService.get('results').subscribe(
-        data => console.log(data),
+        data => {
+            this.results = data;
+            const verifiedResults = this.verifyInHtml();
+            this.postVerifiedResults(verifiedResults);
+            console.log(verifiedResults);
+        },
         err => console.log(err)
       );
+    }
+
+    postVerifiedResults(verifiedResults) {
+      this.verifyResultsService.post('verifiedResults', verifiedResults).subscribe(
+        data => {
+            console.log(data);
+        },
+        err => console.log(err)
+      );
+    }
+
+    verifyInHtml() {
+      let count1 = 0;
+      let count2 = 0;
+      let count3 = 0;
+      for (const item of this.results) {
+        const originalElement = document.elementFromPoint(item['original']['x'], window.innerHeight - item['original']['y']);
+
+        const predictedSimpleDistanceElement = document.elementFromPoint(item['predicted_simple_distance'][0],
+        window.innerHeight - item['predicted_simple_distance'][1]);
+
+        const predictedDistanceFromVelocityElement = document.elementFromPoint(item['predicted_distance_from_velocity'][0],
+        window.innerHeight - item['predicted_distance_from_velocity'][1]);
+
+        const totalDistanceElement = document.elementFromPoint(item['total_distance'][0],
+        window.innerHeight - item['total_distance'][1]);
+
+        item['predicted_simple_distance_html_result'] = originalElement && originalElement.innerHTML &&
+        predictedSimpleDistanceElement && predictedSimpleDistanceElement.innerHTML &&
+        originalElement.innerHTML === predictedSimpleDistanceElement.innerHTML ?
+        true : false;
+
+        item['predicted_distance_from_velocity_html_result'] = originalElement && originalElement.innerHTML &&
+        predictedDistanceFromVelocityElement && predictedDistanceFromVelocityElement.innerHTML &&
+        originalElement.innerHTML ===
+        predictedDistanceFromVelocityElement.innerHTML ? true : false;
+
+        item['total_distance_html_result'] = originalElement && originalElement.innerHTML &&
+        totalDistanceElement && totalDistanceElement.innerHTML &&
+        originalElement.innerHTML === totalDistanceElement.innerHTML ? true : false;
+
+        count1 = item['predicted_simple_distance_html_result'] ? count1 + 1 : count1;
+        count2 = item['predicted_distance_from_velocity_html_result'] ? count2 + 1 : count2;
+        count3 = item['total_distance_html_result'] ? count3 + 1 : count3;
+      }
+      return {
+          results: this.results,
+          percent_simple_distance: count1 / this.results.length,
+          percent_distance_from_velocity: count2 / this.results.length,
+          percent_total_distance: count3 / this.results.length,
+      };
     }
 
     action(event: any) {
