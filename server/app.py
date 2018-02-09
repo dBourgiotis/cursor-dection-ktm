@@ -95,6 +95,15 @@ def get_Results():
     # print(output)
     return 'test'
 
+# endpoint to html verification
+@app.route("/api/v1/html_verification", methods=["GET"])
+def htmlVerification():
+    params = request.args
+    resultsCollectionName = params['resultsCollectionName']
+    results = get_from_db(resultsCollectionName)
+    print(results)
+    return 'test'
+
 def templateMatching(template, totalTemplates, percent, collectionName):
 # create score Array 
     scoreArray = {}
@@ -151,7 +160,9 @@ def templateMatching(template, totalTemplates, percent, collectionName):
     print('error' in endpoint)
     if len(template) > 1 and not( 'error' in endpoint) :
         print(endpoint)
-        output = {'predicted_simple_distance': endpoint['simple_distance'], 'predicted_distance_from_velocity': endpoint['distance_from_velocity'], 'original': template[len(template) - 1], 'total_distance': endpoint['total_distance']}
+        candidates_total_distance = get_total_distance(template)
+        print('Total movements distance is ', candidates_total_distance)
+        output = {'predicted_simple_distance': endpoint['simple_distance'], 'predicted_distance_from_velocity': endpoint['distance_from_velocity'], 'original': template[len(template) - 1], 'total_distance': endpoint['total_distance'], 'candidates_total_distance': candidates_total_distance}
         temp = output.copy()
         add_result_to_db(temp, collectionName)
         return output
@@ -237,6 +248,14 @@ def add_to_database(template, velocityProfile, collectionName):
     dt = math.sqrt(math.pow(dX, 2) + math.pow(dY, 2))
     template_id = db.insert({'template' :template, 'velocity_profile': velocityProfile, 'total_distance': dt })
     return 'added'
+
+def get_total_distance(template):
+    final = len(template) - 1
+    dX = template[final]['x'] - template[0]['x']
+    dY = template[final]['y'] - template[0]['y']
+    dt = math.sqrt(math.pow(dX, 2) + math.pow(dY, 2))
+    return dt
+
 
 # get all documents
 def get_from_db(collectionName):
