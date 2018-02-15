@@ -31,14 +31,14 @@ export class AnalysisComponent {
     totalDistanceErrorPixelsDistChart: any = {title: 'Total Distance',
     color: ['#E8510C'], columns: '', id: 'totalDistanceErrorPixelsDistChart', avgDistance: ''} ;
 
-    simpleDistanceErrorPixelsWithDistScatterChart: any = {title: 'Simple Distance with Total Distance',
+    simpleDistanceErrorPixelsWithDistScatterChart: any = {title: 'Simple Distance',
     color: ['#673ab7'], columns: '', id: 'simpleDistanceErrorPixelsWithDistScatterChart'} ;
     distanceFromVelocityErrorPixelsWithDistScatterChart: any = {title: 'Distance From Rest Velocity',
     color: ['#DE0CE8'], columns: '', id: 'distanceFromVelocityErrorPixelsWithDistScatterChart'} ;
     totalDistanceErrorPixelsWithDistScatterChart: any = {title: 'Total Distance',
     color: ['#E8510C'], columns: '', id: 'totalDistanceErrorPixelsWithDistScatterChart'} ;
 
-    simpleDistanceErrorPixelsWithPredictionScatterChart: any = {title: 'Simple Distance with Total Distance',
+    simpleDistanceErrorPixelsWithPredictionScatterChart: any = {title: 'Simple Distance',
     color: ['#673ab7'], columns: '', id: 'simpleDistanceErrorPixelsWithPredictionScatterChart'} ;
     distanceFromVelocityErrorPixelsWithPredictionScatterChart: any = {title: 'Distance From Rest Velocity',
     color: ['#DE0CE8'], columns: '', id: 'distanceFromVelocityErrorPixelsWithPredictionScatterChart'} ;
