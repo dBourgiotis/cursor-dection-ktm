@@ -15,7 +15,7 @@ export class ScatterChartComponent implements OnChanges {
     @Input() chartFlag: any;
 
     ngOnChanges( changes: SimpleChanges) {
-        if (changes.chartFlag) {
+        if (changes.chartFlag && this.chartFlag) {
             setTimeout( () => {
                 this.generateChart();
             }, 200);
@@ -56,9 +56,6 @@ export class ScatterChartComponent implements OnChanges {
                         text: 'Error Distance',
                         position: 'outer-center'
                     },
-                    // tick: {
-                    //     format: d3.format('.2%')
-                    // }
                 }
             },
             legend: {

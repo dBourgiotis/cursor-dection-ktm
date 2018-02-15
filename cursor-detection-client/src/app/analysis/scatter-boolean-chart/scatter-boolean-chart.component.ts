@@ -15,7 +15,7 @@ export class ScatterBooleanChartComponent implements OnChanges {
     @Input() chartFlag: any;
 
     ngOnChanges( changes: SimpleChanges) {
-        if (changes.chartFlag) {
+        if (changes.chartFlag && this.chartFlag) {
             setTimeout( () => {
                 this.generateChart();
             }, 200);

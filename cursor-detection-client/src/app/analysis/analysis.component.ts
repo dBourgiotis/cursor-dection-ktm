@@ -65,6 +65,7 @@ export class AnalysisComponent {
 
     analysisResults() {
         this.results = null;
+        this.chartFlag = 0;
         const verifiedResultsCollectionName = this.selectedTab ? 'verifiedFinalResults' : 'verifiedResults';
         this.analysisResultsService.get(verifiedResultsCollectionName).subscribe(
             data => {
@@ -83,6 +84,7 @@ export class AnalysisComponent {
         const simpleDistancePredictionResults: any = [];
         const distanceFromVelocityPredictionResults: any = [];
         const totalDistancePredictionResults: any = [];
+        this.candidatesTotalDistance = [];
         for ( const item of this.results.results) {
             this.simpleDistanceErrorPixels.push(item.error_distance_of_predicted_simple_distance);
             this.distanceFromVelocityErrorPixels.push(item.error_distance_of_predicted_distance_from_velocity);
@@ -98,14 +100,14 @@ export class AnalysisComponent {
         this.distanceFromVelocityErrorPixelsWithDistScatterChart.columns = this.transformToScatter(this.candidatesTotalDistance,
             this.distanceFromVelocityErrorPixels);
         this.totalDistanceErrorPixelsWithDistScatterChart.columns = this.transformToScatter(this.candidatesTotalDistance,
-            this.candidatesTotalDistance);
+            this.totalDistanceErrorPixels);
 
         this.simpleDistanceErrorPixelsWithPredictionScatterChart.columns = this.transformToBooleanScatter(simpleDistancePredictionResults,
             this.simpleDistanceErrorPixels);
         this.distanceFromVelocityErrorPixelsWithPredictionScatterChart.columns =
             this.transformToBooleanScatter(distanceFromVelocityPredictionResults, this.distanceFromVelocityErrorPixels);
         this.totalDistanceErrorPixelsWithPredictionScatterChart.columns = this.transformToBooleanScatter(totalDistancePredictionResults,
-            this.candidatesTotalDistance);
+            this.totalDistanceErrorPixels);
 
         this.simpleDistanceErrorPixelsDist = this.calculateDists(this.simpleDistanceErrorPixels);
         this.distanceFromVelocityErrorPixelsDist = this.calculateDists(this.distanceFromVelocityErrorPixels);
@@ -119,7 +121,9 @@ export class AnalysisComponent {
         this.distanceFromVelocityErrorPixelsDistChart.avgDistance = this.avgDistance(this.distanceFromVelocityErrorPixels);
         this.totalDistanceErrorPixelsDistChart.avgDistance = this.avgDistance(this.totalDistanceErrorPixels);
 
-        this.chartFlag++;
+        setTimeout( () => {
+            this.chartFlag++;
+        }, 200);
     }
 
     calculateDists(array: any) {
